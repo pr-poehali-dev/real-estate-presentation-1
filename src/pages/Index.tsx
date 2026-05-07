@@ -487,7 +487,7 @@ export default function Index() {
 
             <div
               className="hidden md:block relative shrink-0"
-              style={{ width: 420, backgroundImage: `url(${IMG.bathroom})`, backgroundSize: "cover", backgroundPosition: "center" }}
+              style={{ width: 420, backgroundImage: `url(${IMG.facade})`, backgroundSize: "cover", backgroundPosition: "center" }}
             >
               <div className="absolute inset-0" style={{ background: "linear-gradient(to right, rgba(255,255,255,1) 0%, transparent 30%)" }} />
             </div>
