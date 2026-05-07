@@ -74,9 +74,31 @@ const TOTAL = SLIDE_NAMES.length;
 export default function Index() {
   const [slide, setSlide] = useState(0);
   const [galleryIdx, setGalleryIdx] = useState(0);
+  const [downloading, setDownloading] = useState(false);
 
   const next = useCallback(() => setSlide((s) => Math.min(s + 1, TOTAL - 1)), []);
   const prev = useCallback(() => setSlide((s) => Math.max(s - 1, 0)), []);
+
+  const downloadPptx = async () => {
+    if (downloading) return;
+    setDownloading(true);
+    try {
+      const res = await fetch("https://functions.poehali.dev/2571315c-31c6-4ea4-9122-a6411c0a162b");
+      const data = await res.json();
+      if (data.url) {
+        const a = document.createElement("a");
+        a.href = data.url;
+        a.download = data.filename || "presentation.pptx";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setDownloading(false);
+    }
+  };
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -108,8 +130,26 @@ export default function Index() {
             </div>
           </div>
         </div>
-        <div className="text-xs font-medium tracking-widest uppercase" style={{ color: "rgba(255,255,255,0.4)" }}>
-          {SLIDE_NAMES[slide]} · {String(slide + 1).padStart(2, "0")} / {String(TOTAL).padStart(2, "0")}
+        <div className="flex items-center gap-4">
+          <div className="hidden md:block text-xs font-medium tracking-widest uppercase" style={{ color: "rgba(255,255,255,0.4)" }}>
+            {SLIDE_NAMES[slide]} · {String(slide + 1).padStart(2, "0")} / {String(TOTAL).padStart(2, "0")}
+          </div>
+          <button
+            onClick={downloadPptx}
+            disabled={downloading}
+            className="flex items-center gap-2 px-4 py-2 text-xs font-bold tracking-widest uppercase transition-all duration-200 hover:opacity-90"
+            style={{
+              background: "var(--corp-gold)",
+              color: "#fff",
+              borderRadius: 2,
+              border: "none",
+              cursor: downloading ? "wait" : "pointer",
+              opacity: downloading ? 0.7 : 1,
+            }}
+          >
+            <Icon name={downloading ? "Loader2" : "Download"} size={13} />
+            {downloading ? "Готовлю файл…" : "Скачать PowerPoint"}
+          </button>
         </div>
       </div>
 
