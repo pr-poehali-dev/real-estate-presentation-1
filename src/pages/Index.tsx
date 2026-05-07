@@ -1,39 +1,64 @@
 import { useState, useEffect, useCallback } from "react";
 import Icon from "@/components/ui/icon";
 
-const IMAGES = {
-  building: "https://cdn.poehali.dev/projects/1ccda9f4-d47a-42c5-9008-9a33cfe198d2/files/18bf6772-2942-49f8-a58e-646ab4f4fa28.jpg",
-  interior: "https://cdn.poehali.dev/projects/1ccda9f4-d47a-42c5-9008-9a33cfe198d2/files/308b76b5-5fcd-405c-b911-2bcd968ced9b.jpg",
-  retail: "https://cdn.poehali.dev/projects/1ccda9f4-d47a-42c5-9008-9a33cfe198d2/files/b2c10685-1e6f-4118-8cd8-516c9019aefc.jpg",
-  aerial: "https://cdn.poehali.dev/projects/1ccda9f4-d47a-42c5-9008-9a33cfe198d2/files/ab0def3f-684a-450a-ba59-a931bd74dcc7.jpg",
+const IMG = {
+  livingRoom: "https://cdn.poehali.dev/projects/1ccda9f4-d47a-42c5-9008-9a33cfe198d2/files/000665f4-5d4e-4030-985e-6b48daab5828.jpg",
+  bedroom: "https://cdn.poehali.dev/projects/1ccda9f4-d47a-42c5-9008-9a33cfe198d2/files/33c27c15-965d-4ee8-9f1d-9621050139c6.jpg",
+  facade: "https://cdn.poehali.dev/projects/1ccda9f4-d47a-42c5-9008-9a33cfe198d2/files/b1cf8993-8d6d-4d0b-beaf-1d5a400f8223.jpg",
+  parkView: "https://cdn.poehali.dev/projects/1ccda9f4-d47a-42c5-9008-9a33cfe198d2/files/1db7cda2-feca-4ecf-88f1-6d9987ea3fce.jpg",
 };
 
-const OBJECT_DATA = {
-  name: "Бизнес-центр «Горизонт»",
-  category: "Коммерческая недвижимость · Класс A+",
-  image: IMAGES.building,
-  area: "4 800 м²",
-  floor: "12 этажей",
-  parking: "120 м/м",
-  price: "680 000 000 ₽",
-  status: "Продажа",
+const APT = {
+  title: "Victory Park Residences",
+  subtitle: "4-комнатные апартаменты с видом на Парк Победы",
+  area: "179,08 м²",
+  livingArea: "90 м²",
+  kitchen: "60 м²",
+  rooms: "4",
+  floor: "10 / 14",
+  building: "Корпус 2",
+  status: "Свободная продажа",
+  type: "Квартира",
+  balcony: "Нет",
+  liftCargo: "Нет",
   description:
-    "Современный бизнес-центр класса A+ в деловом квартале города. Панорамное остекление фасада, подземный паркинг на 120 машиномест, развитая инфраструктура. Центральная система управления зданием BMS, индивидуальные климат-системы в каждом офисе.",
-  features: [
-    { icon: "ShieldCheck", title: "Класс A+", text: "Высочайший стандарт инженерных систем" },
-    { icon: "Car", title: "Паркинг 120 м/м", text: "Подземный охраняемый паркинг" },
-    { icon: "Cpu", title: "BMS-система", text: "Единое управление зданием" },
-    { icon: "Lock", title: "Охрана 24/7", text: "Контроль доступа и видеонаблюдение" },
+    "Редкий видовой лот в одном из самых престижных комплексов Москвы. Уникальная 4-комнатная квартира 179,08 м² на 10 этаже 2 корпуса Victory Park Residences с панорамным видом на Парк Победы и центр Москвы. Дом сдан, акт приёма-передачи подписан. Премиальный дизайнерский ремонт от застройщика в стиле Неодеко — в квартире никто не проживал.",
+  views: [
+    "Музей и Монумент Победы",
+    "Храм Георгия Победоносца",
+    "Фонтан «Годы войны»",
+    "Триумфальные ворота",
+    "Москва-Сити",
+  ],
+  layout: [
+    { icon: "ChefHat", title: "Кухня-гостиная 60 м²", text: "Просторная зона для жизни и приёма гостей" },
+    { icon: "BedDouble", title: "3 мастер-спальни", text: "С санузлами и гардеробными" },
+    { icon: "Sparkles", title: "Стиль Неодеко", text: "Премиальный дизайнерский ремонт" },
+    { icon: "Sun", title: "Панорамные окна", text: "Максимум света и пространства" },
+  ],
+  amenities: [
+    { icon: "Dumbbell", title: "Фитнес-центр с бассейном" },
+    { icon: "Heart", title: "Wellness и салон красоты" },
+    { icon: "Flower2", title: "Аэройога и пилатес" },
+    { icon: "Trees", title: "Закрытая озеленённая территория" },
+    { icon: "Baby", title: "Детский сад и площадки" },
+    { icon: "Car", title: "Подземный паркинг и автомойка" },
+  ],
+  location: [
+    { val: "Напротив", label: "Парк Победы" },
+    { val: "15 мин", label: "до Кремля" },
+    { val: "10 мин", label: "до Москва-Сити" },
+    { val: "5 мин", label: "до Лужников" },
   ],
   gallery: [
-    { img: IMAGES.building, caption: "Фасад здания" },
-    { img: IMAGES.interior, caption: "Холл и зоны ожидания" },
-    { img: IMAGES.retail, caption: "Лобби первого этажа" },
-    { img: IMAGES.aerial, caption: "Аэросъёмка территории" },
+    { img: "https://cdn.poehali.dev/projects/1ccda9f4-d47a-42c5-9008-9a33cfe198d2/files/000665f4-5d4e-4030-985e-6b48daab5828.jpg", caption: "Кухня-гостиная 60 м² · Стиль Неодеко" },
+    { img: "https://cdn.poehali.dev/projects/1ccda9f4-d47a-42c5-9008-9a33cfe198d2/files/33c27c15-965d-4ee8-9f1d-9621050139c6.jpg", caption: "Мастер-спальня с гардеробной" },
+    { img: "https://cdn.poehali.dev/projects/1ccda9f4-d47a-42c5-9008-9a33cfe198d2/files/b1cf8993-8d6d-4d0b-beaf-1d5a400f8223.jpg", caption: "Victory Park Residences · фасад" },
+    { img: "https://cdn.poehali.dev/projects/1ccda9f4-d47a-42c5-9008-9a33cfe198d2/files/1db7cda2-feca-4ecf-88f1-6d9987ea3fce.jpg", caption: "Вид на Парк Победы из окон" },
   ],
 };
 
-const SLIDE_NAMES = ["Титул", "Описание", "Галерея", "Контакты"];
+const SLIDE_NAMES = ["Титул", "О квартире", "Локация и ЖК", "Галерея", "Паркинг", "Контакты"];
 const TOTAL = SLIDE_NAMES.length;
 
 export default function Index() {
@@ -54,22 +79,22 @@ export default function Index() {
 
   return (
     <div
-      className="w-full min-h-screen flex flex-col items-center justify-center p-4 md:p-10"
+      className="w-full min-h-screen flex flex-col items-center justify-center p-4 md:p-8"
       style={{
         fontFamily: "'Montserrat', sans-serif",
         background: "linear-gradient(135deg, #1f2937 0%, #0d2d5e 100%)",
       }}
     >
-      {/* HEADER BAR */}
-      <div className="w-full max-w-[1200px] flex items-center justify-between mb-4">
+      {/* HEADER */}
+      <div className="w-full max-w-[1240px] flex items-center justify-between mb-3">
         <div className="flex items-center gap-3">
           <div className="flex items-center justify-center" style={{ width: 32, height: 32, background: "var(--corp-gold)", borderRadius: 2 }}>
             <Icon name="Building2" size={16} style={{ color: "#fff" }} />
           </div>
           <div>
-            <div className="text-white font-semibold text-xs tracking-wider">ГК «Альфа Девелопмент»</div>
+            <div className="text-white font-semibold text-xs tracking-wider">Victory Park Residences</div>
             <div className="font-medium" style={{ color: "var(--corp-gold)", fontSize: 9, letterSpacing: "0.3em" }}>
-              КОРПОРАТИВНАЯ ПРЕЗЕНТАЦИЯ
+              ПРЕЗЕНТАЦИЯ ОБЪЕКТА
             </div>
           </div>
         </div>
@@ -78,13 +103,13 @@ export default function Index() {
         </div>
       </div>
 
-      {/* SLIDE FRAME — 16:9 */}
+      {/* SLIDE 16:9 */}
       <div
-        className="w-full max-w-[1200px] relative bg-white overflow-hidden"
+        className="w-full max-w-[1240px] relative bg-white overflow-hidden"
         style={{
           aspectRatio: "16 / 9",
           borderRadius: 4,
-          boxShadow: "0 40px 80px rgba(0,0,0,0.45), 0 0 0 1px rgba(255,255,255,0.04)",
+          boxShadow: "0 40px 80px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.04)",
         }}
       >
         {/* SLIDE 1 — TITLE */}
@@ -92,13 +117,9 @@ export default function Index() {
           <div key="s1" className="absolute inset-0 flex">
             <div
               className="flex-1 relative overflow-hidden"
-              style={{
-                backgroundImage: `url(${OBJECT_DATA.image})`,
-                backgroundSize: "cover",
-                backgroundPosition: "center",
-              }}
+              style={{ backgroundImage: `url(${IMG.livingRoom})`, backgroundSize: "cover", backgroundPosition: "center" }}
             >
-              <div className="absolute inset-0" style={{ background: "linear-gradient(115deg, rgba(13,45,94,0.92) 35%, rgba(13,45,94,0.35) 100%)" }} />
+              <div className="absolute inset-0" style={{ background: "linear-gradient(115deg, rgba(13,45,94,0.93) 30%, rgba(13,45,94,0.35) 100%)" }} />
               <div
                 className="absolute inset-0"
                 style={{
@@ -109,33 +130,33 @@ export default function Index() {
               />
               <div className="relative z-10 h-full flex flex-col justify-end p-8 md:p-14">
                 <div className="fade-up fade-up-delay-1">
-                  <span
-                    className="inline-block text-xs font-medium mb-5"
-                    style={{ color: "var(--corp-gold)", letterSpacing: "0.32em", textTransform: "uppercase" }}
-                  >
-                    Презентация объекта · 2026
+                  <span className="inline-block text-xs font-medium mb-5" style={{ color: "var(--corp-gold)", letterSpacing: "0.32em", textTransform: "uppercase" }}>
+                    Эксклюзивное предложение · 2026
                   </span>
                 </div>
                 <h1
-                  className="fade-up fade-up-delay-2 font-light text-white mb-4"
-                  style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "clamp(34px, 5.2vw, 64px)", lineHeight: 1.05 }}
+                  className="fade-up fade-up-delay-2 font-light text-white mb-3"
+                  style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "clamp(34px, 5.4vw, 68px)", lineHeight: 1 }}
                 >
-                  Бизнес-центр <br />
-                  <span style={{ fontStyle: "italic", color: "var(--corp-gold)" }}>«Горизонт»</span>
+                  Victory Park <br />
+                  <span style={{ fontStyle: "italic", color: "var(--corp-gold)" }}>Residences</span>
                 </h1>
-                <p className="fade-up fade-up-delay-3 max-w-md text-sm leading-relaxed" style={{ color: "rgba(255,255,255,0.65)" }}>
-                  Коммерческая недвижимость премиального сегмента. Класс A+ в деловом квартале с полной инфраструктурой.
+                <p className="fade-up fade-up-delay-3 max-w-md text-sm leading-relaxed mb-2" style={{ color: "rgba(255,255,255,0.78)" }}>
+                  4-комнатная видовая квартира 179,08 м² с панорамным видом на Парк Победы
+                </p>
+                <p className="fade-up fade-up-delay-3 text-xs italic" style={{ color: "rgba(255,255,255,0.45)" }}>
+                  Премиальный ремонт в стиле Неодеко · никто не проживал
                 </p>
 
                 <div className="fade-up fade-up-delay-4 flex gap-8 mt-8">
                   {[
-                    { val: "4 800", label: "м² общая площадь" },
-                    { val: "A+", label: "Класс здания" },
-                    { val: "12", label: "этажей" },
+                    { val: "179", label: "м² общая" },
+                    { val: "60", label: "м² гостиная" },
+                    { val: "10/14", label: "этаж" },
                   ].map(({ val, label }) => (
                     <div key={label}>
-                      <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 32, color: "#fff", lineHeight: 1, fontWeight: 600 }}>{val}</div>
-                      <div className="text-[10px] mt-1 font-medium tracking-widest uppercase" style={{ color: "rgba(255,255,255,0.42)" }}>
+                      <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 36, color: "#fff", lineHeight: 1, fontWeight: 600 }}>{val}</div>
+                      <div className="text-[10px] mt-1 font-medium tracking-widest uppercase" style={{ color: "rgba(255,255,255,0.45)" }}>
                         {label}
                       </div>
                     </div>
@@ -147,81 +168,95 @@ export default function Index() {
               <div>
                 <span className="accent-line mb-6 block" />
                 <div className="text-xs font-medium tracking-widest uppercase mb-3" style={{ color: "rgba(255,255,255,0.4)" }}>
-                  Подготовлено для
+                  Ключевое
                 </div>
-                <div className="text-white font-semibold text-base mb-1">Корпоративных клиентов</div>
-                <div className="text-xs" style={{ color: "rgba(255,255,255,0.5)" }}>
-                  и инвесторов
+                <div className="text-white font-semibold text-base mb-1">Видовой лот</div>
+                <div className="text-xs leading-relaxed" style={{ color: "rgba(255,255,255,0.55)" }}>
+                  Один из лучших панорамных видов в Москве — на Парк Победы и центр города
                 </div>
               </div>
               <div>
                 <div className="text-xs tracking-widest uppercase mb-2" style={{ color: "rgba(255,255,255,0.32)" }}>
-                  Дата
+                  Статус
                 </div>
-                <div className="text-white text-sm font-medium">Май 2026</div>
+                <div className="text-white text-sm font-medium mb-3">Дом сдан · АПП подписан</div>
+                <div
+                  className="inline-flex items-center gap-2 px-3 py-1.5 text-[10px] font-bold tracking-widest uppercase"
+                  style={{ background: "var(--corp-gold)", color: "#fff", borderRadius: 2 }}
+                >
+                  <Icon name="Sparkles" size={11} />
+                  Новая квартира
+                </div>
               </div>
             </div>
           </div>
         )}
 
-        {/* SLIDE 2 — DESCRIPTION */}
+        {/* SLIDE 2 — ABOUT */}
         {slide === 1 && (
           <div key="s2" className="absolute inset-0 flex flex-col p-8 md:p-12 bg-white">
-            <div className="fade-up fade-up-delay-1 flex items-center justify-between mb-6">
+            <div className="fade-up fade-up-delay-1 flex items-end justify-between mb-4">
               <div>
                 <span className="accent-line mb-3 block" />
                 <div className="text-xs font-medium tracking-widest uppercase" style={{ color: "var(--corp-gray-mid)" }}>
-                  Слайд 02 · Подробное описание
+                  Слайд 02 · О квартире
                 </div>
               </div>
               <span
                 className="text-xs font-semibold tracking-widest uppercase px-3 py-1.5"
                 style={{ background: "var(--corp-navy)", color: "#fff", borderRadius: 2 }}
               >
-                {OBJECT_DATA.status}
+                {APT.status}
               </span>
             </div>
 
             <h2
               className="fade-up fade-up-delay-2 font-light mb-1"
-              style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "clamp(28px, 3.6vw, 44px)", color: "var(--corp-navy)", lineHeight: 1.1 }}
+              style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "clamp(26px, 3.4vw, 40px)", color: "var(--corp-navy)", lineHeight: 1.1 }}
             >
-              {OBJECT_DATA.name}
+              Просторная резиденция <span style={{ fontStyle: "italic", color: "var(--corp-gold)" }}>в стиле Неодеко</span>
             </h2>
-            <div className="fade-up fade-up-delay-2 text-xs font-medium tracking-wide uppercase mb-6" style={{ color: "var(--corp-gold)" }}>
-              {OBJECT_DATA.category}
+            <div className="fade-up fade-up-delay-2 text-xs font-medium tracking-wide uppercase mb-5" style={{ color: "var(--corp-gold)" }}>
+              {APT.subtitle}
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-5 gap-6 flex-1">
+            <div className="grid grid-cols-1 md:grid-cols-5 gap-5 flex-1 min-h-0">
               <div className="md:col-span-2 fade-up fade-up-delay-3 relative overflow-hidden" style={{ borderRadius: 2 }}>
-                <img src={OBJECT_DATA.image} alt={OBJECT_DATA.name} className="w-full h-full object-cover" style={{ minHeight: 240 }} />
-                <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(13,45,94,0.5) 0%, transparent 50%)" }} />
+                <img src={IMG.livingRoom} alt="Кухня-гостиная" className="w-full h-full object-cover" style={{ minHeight: 220 }} />
+                <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(13,45,94,0.55) 0%, transparent 50%)" }} />
+                <div className="absolute bottom-3 left-3 right-3">
+                  <div className="text-white font-semibold text-xs" style={{ textShadow: "0 2px 8px rgba(0,0,0,0.5)" }}>
+                    Кухня-гостиная 60 м²
+                  </div>
+                </div>
               </div>
 
               <div className="md:col-span-3 fade-up fade-up-delay-4 flex flex-col">
-                <p className="text-sm leading-relaxed mb-5" style={{ color: "var(--corp-gray)" }}>
-                  {OBJECT_DATA.description}
+                <p className="text-[13px] leading-relaxed mb-4" style={{ color: "var(--corp-gray)" }}>
+                  {APT.description}
                 </p>
 
-                <div className="grid grid-cols-2 gap-3 mb-5">
+                <div className="grid grid-cols-3 gap-2 mb-3">
                   {[
-                    { icon: "Maximize2", label: "Площадь", val: OBJECT_DATA.area },
-                    { icon: "Layers", label: "Этажность", val: OBJECT_DATA.floor },
-                    { icon: "Car", label: "Паркинг", val: OBJECT_DATA.parking },
-                    { icon: "Tag", label: "Стоимость", val: OBJECT_DATA.price },
+                    { icon: "DoorOpen", label: "Комнат", val: APT.rooms },
+                    { icon: "Maximize2", label: "Площадь", val: APT.area },
+                    { icon: "Sofa", label: "Жилая", val: APT.livingArea },
+                    { icon: "ChefHat", label: "Кухня", val: APT.kitchen },
+                    { icon: "Layers", label: "Этаж", val: APT.floor },
+                    { icon: "Building", label: "Корпус", val: APT.building },
                   ].map(({ icon, label, val }) => (
                     <div
                       key={label}
-                      className="p-3"
+                      className="p-2.5"
                       style={{ background: "rgba(26,77,143,0.05)", borderLeft: "3px solid var(--corp-blue)", borderRadius: 2 }}
                     >
-                      <div className="flex items-center gap-1.5 mb-1">
-                        <Icon name={icon} size={11} style={{ color: "var(--corp-blue-mid)" }} />
-                        <span className="text-[10px] font-medium tracking-widest uppercase" style={{ color: "var(--corp-gray-mid)" }}>
+                      <div className="flex items-center gap-1.5 mb-0.5">
+                        <Icon name={icon} size={10} style={{ color: "var(--corp-blue-mid)" }} />
+                        <span className="text-[9px] font-medium tracking-widest uppercase" style={{ color: "var(--corp-gray-mid)" }}>
                           {label}
                         </span>
                       </div>
-                      <div className="font-semibold" style={{ color: "var(--corp-navy)", fontSize: 14 }}>
+                      <div className="font-semibold" style={{ color: "var(--corp-navy)", fontSize: 12 }}>
                         {val}
                       </div>
                     </div>
@@ -229,17 +264,14 @@ export default function Index() {
                 </div>
 
                 <div className="grid grid-cols-2 gap-2">
-                  {OBJECT_DATA.features.map((f) => (
+                  {APT.layout.map((f) => (
                     <div key={f.title} className="flex items-start gap-2">
-                      <div
-                        className="flex items-center justify-center shrink-0"
-                        style={{ width: 28, height: 28, background: "var(--corp-navy)", borderRadius: 2 }}
-                      >
+                      <div className="flex items-center justify-center shrink-0" style={{ width: 28, height: 28, background: "var(--corp-navy)", borderRadius: 2 }}>
                         <Icon name={f.icon} size={13} style={{ color: "var(--corp-gold)" }} />
                       </div>
                       <div>
-                        <div className="text-xs font-semibold" style={{ color: "var(--corp-navy)" }}>{f.title}</div>
-                        <div className="text-[11px]" style={{ color: "var(--corp-gray-mid)" }}>{f.text}</div>
+                        <div className="text-[11px] font-semibold leading-tight" style={{ color: "var(--corp-navy)" }}>{f.title}</div>
+                        <div className="text-[10px]" style={{ color: "var(--corp-gray-mid)" }}>{f.text}</div>
                       </div>
                     </div>
                   ))}
@@ -249,54 +281,126 @@ export default function Index() {
           </div>
         )}
 
-        {/* SLIDE 3 — GALLERY */}
+        {/* SLIDE 3 — LOCATION + AMENITIES */}
         {slide === 2 && (
-          <div key="s3" className="absolute inset-0 flex flex-col p-8 md:p-12" style={{ background: "#eef2f8" }}>
-            <div className="fade-up fade-up-delay-1 mb-5">
+          <div key="s3" className="absolute inset-0 flex" style={{ background: "#eef2f8" }}>
+            <div className="flex-1 relative overflow-hidden">
+              <img src={IMG.parkView} alt="Парк Победы" className="absolute inset-0 w-full h-full object-cover" />
+              <div className="absolute inset-0" style={{ background: "linear-gradient(105deg, rgba(13,45,94,0.85) 25%, rgba(13,45,94,0.15) 100%)" }} />
+              <div className="relative z-10 h-full flex flex-col justify-center p-8 md:p-12">
+                <div className="fade-up fade-up-delay-1">
+                  <span className="accent-line mb-4 block" />
+                  <div className="text-xs font-medium tracking-widest uppercase mb-3" style={{ color: "rgba(255,255,255,0.5)" }}>
+                    Слайд 03 · Локация
+                  </div>
+                </div>
+                <h2
+                  className="fade-up fade-up-delay-2 font-light text-white mb-5"
+                  style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "clamp(28px, 3.8vw, 46px)", lineHeight: 1.05 }}
+                >
+                  Лучший вид <br />
+                  <span style={{ fontStyle: "italic", color: "var(--corp-gold)" }}>в столице</span>
+                </h2>
+
+                <div className="fade-up fade-up-delay-3 mb-6">
+                  <div className="text-[10px] font-medium tracking-widest uppercase mb-3" style={{ color: "var(--corp-gold)" }}>
+                    Из окон видно
+                  </div>
+                  <div className="flex flex-col gap-1.5">
+                    {APT.views.map((v) => (
+                      <div key={v} className="flex items-center gap-2">
+                        <Icon name="Eye" size={12} style={{ color: "var(--corp-gold)" }} />
+                        <span className="text-xs" style={{ color: "rgba(255,255,255,0.85)" }}>{v}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="fade-up fade-up-delay-4 grid grid-cols-2 gap-3">
+                  {APT.location.map(({ val, label }) => (
+                    <div key={label} className="p-3" style={{ background: "rgba(255,255,255,0.08)", backdropFilter: "blur(6px)", borderRadius: 2, borderLeft: "2px solid var(--corp-gold)" }}>
+                      <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 22, color: "#fff", fontWeight: 600, lineHeight: 1 }}>{val}</div>
+                      <div className="text-[10px] tracking-widest uppercase mt-1" style={{ color: "rgba(255,255,255,0.55)" }}>{label}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div className="hidden md:flex flex-col p-10 shrink-0" style={{ width: 380, background: "#fff" }}>
+              <span className="accent-line mb-4 block" />
+              <h3
+                className="font-light mb-2"
+                style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 28, color: "var(--corp-navy)", lineHeight: 1.1 }}
+              >
+                Инфраструктура <span style={{ fontStyle: "italic", color: "var(--corp-gold)" }}>ЖК</span>
+              </h3>
+              <p className="text-[11px] mb-5" style={{ color: "var(--corp-gray-mid)" }}>
+                Закрытая территория с дизайнерским ландшафтом
+              </p>
+
+              <div className="flex flex-col gap-3">
+                {APT.amenities.map((a) => (
+                  <div key={a.title} className="flex items-center gap-3 p-2.5" style={{ background: "rgba(26,77,143,0.04)", borderRadius: 2 }}>
+                    <div className="flex items-center justify-center shrink-0" style={{ width: 32, height: 32, background: "var(--corp-navy)", borderRadius: 2 }}>
+                      <Icon name={a.icon} size={14} style={{ color: "var(--corp-gold)" }} />
+                    </div>
+                    <div className="text-xs font-semibold" style={{ color: "var(--corp-navy)" }}>{a.title}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* SLIDE 4 — GALLERY */}
+        {slide === 3 && (
+          <div key="s4" className="absolute inset-0 flex flex-col p-8 md:p-12" style={{ background: "#eef2f8" }}>
+            <div className="fade-up fade-up-delay-1 mb-4">
               <span className="accent-line mb-3 block" />
               <div className="flex items-end justify-between">
                 <h2 className="font-light" style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "clamp(28px, 3.6vw, 44px)", color: "var(--corp-navy)", lineHeight: 1.1 }}>
                   Галерея <span style={{ fontStyle: "italic", color: "var(--corp-gold)" }}>фотографий</span>
                 </h2>
                 <div className="text-xs font-medium tracking-widest uppercase" style={{ color: "var(--corp-gray-mid)" }}>
-                  Слайд 03
+                  Слайд 04 · Съёмка 24.04.2026
                 </div>
               </div>
             </div>
 
             <div className="flex-1 grid grid-cols-1 md:grid-cols-4 gap-3 min-h-0">
               <div className="md:col-span-3 gallery-card relative overflow-hidden" style={{ borderRadius: 2 }}>
-                <img src={OBJECT_DATA.gallery[galleryIdx].img} alt={OBJECT_DATA.gallery[galleryIdx].caption} className="w-full h-full object-cover" />
+                <img src={APT.gallery[galleryIdx].img} alt={APT.gallery[galleryIdx].caption} className="w-full h-full object-cover" />
                 <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(13,45,94,0.65) 0%, transparent 50%)" }} />
                 <div className="absolute bottom-5 left-5 right-5">
                   <div
                     className="inline-block text-[10px] font-semibold tracking-widest uppercase px-2.5 py-1 mb-2"
                     style={{ background: "var(--corp-gold)", color: "#fff", borderRadius: 2 }}
                   >
-                    {galleryIdx + 1} / {OBJECT_DATA.gallery.length}
+                    {galleryIdx + 1} / {APT.gallery.length}
                   </div>
                   <div className="text-white font-semibold text-base" style={{ textShadow: "0 2px 8px rgba(0,0,0,0.5)" }}>
-                    {OBJECT_DATA.gallery[galleryIdx].caption}
+                    {APT.gallery[galleryIdx].caption}
                   </div>
                 </div>
                 <button
-                  onClick={() => setGalleryIdx((p) => (p - 1 + OBJECT_DATA.gallery.length) % OBJECT_DATA.gallery.length)}
-                  className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center justify-center transition-all duration-200 hover:opacity-100"
-                  style={{ width: 36, height: 36, background: "rgba(13,45,94,0.85)", color: "#fff", borderRadius: 2, border: "none", cursor: "pointer", opacity: 0.7 }}
+                  onClick={() => setGalleryIdx((p) => (p - 1 + APT.gallery.length) % APT.gallery.length)}
+                  className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center justify-center"
+                  style={{ width: 36, height: 36, background: "rgba(13,45,94,0.85)", color: "#fff", borderRadius: 2, border: "none", cursor: "pointer" }}
                 >
                   <Icon name="ChevronLeft" size={16} />
                 </button>
                 <button
-                  onClick={() => setGalleryIdx((p) => (p + 1) % OBJECT_DATA.gallery.length)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center justify-center transition-all duration-200 hover:opacity-100"
-                  style={{ width: 36, height: 36, background: "rgba(13,45,94,0.85)", color: "#fff", borderRadius: 2, border: "none", cursor: "pointer", opacity: 0.7 }}
+                  onClick={() => setGalleryIdx((p) => (p + 1) % APT.gallery.length)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center justify-center"
+                  style={{ width: 36, height: 36, background: "rgba(13,45,94,0.85)", color: "#fff", borderRadius: 2, border: "none", cursor: "pointer" }}
                 >
                   <Icon name="ChevronRight" size={16} />
                 </button>
               </div>
 
               <div className="flex md:flex-col gap-3 overflow-auto">
-                {OBJECT_DATA.gallery.map((g, idx) => (
+                {APT.gallery.map((g, idx) => (
                   <div
                     key={idx}
                     className="gallery-card cursor-pointer overflow-hidden flex-1 relative"
@@ -317,9 +421,73 @@ export default function Index() {
           </div>
         )}
 
-        {/* SLIDE 4 — CONTACTS */}
-        {slide === 3 && (
-          <div key="s4" className="absolute inset-0 flex" style={{ background: "var(--corp-navy)" }}>
+        {/* SLIDE 5 — PARKING */}
+        {slide === 4 && (
+          <div key="s5" className="absolute inset-0 flex flex-col md:flex-row" style={{ background: "var(--corp-white)" }}>
+            <div className="flex-1 p-8 md:p-12 flex flex-col justify-center">
+              <div className="fade-up fade-up-delay-1">
+                <span className="accent-line mb-4 block" />
+                <div className="text-xs font-medium tracking-widest uppercase mb-3" style={{ color: "var(--corp-gray-mid)" }}>
+                  Слайд 05 · Дополнительно
+                </div>
+              </div>
+              <h2
+                className="fade-up fade-up-delay-2 font-light mb-4"
+                style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "clamp(28px, 3.8vw, 46px)", color: "var(--corp-navy)", lineHeight: 1.05 }}
+              >
+                3 машино-места <br />
+                <span style={{ fontStyle: "italic", color: "var(--corp-gold)" }}>одним блоком</span>
+              </h2>
+
+              <p className="fade-up fade-up-delay-3 text-sm leading-relaxed mb-6 max-w-md" style={{ color: "var(--corp-gray)" }}>
+                В продаже также три машино-места, расположенные рядом друг с другом одним блоком — для вашего парка автомобилей.
+                Подземный охраняемый паркинг с прямым доступом с любого этажа комплекса.
+              </p>
+
+              <div className="fade-up fade-up-delay-4 grid grid-cols-2 gap-3 mb-5 max-w-md">
+                <div className="p-4" style={{ background: "var(--corp-navy)", borderRadius: 2 }}>
+                  <div className="text-[10px] tracking-widest uppercase mb-1" style={{ color: "rgba(255,255,255,0.5)" }}>3 машино-места</div>
+                  <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 28, color: "#fff", fontWeight: 600, lineHeight: 1 }}>
+                    50 млн ₽
+                  </div>
+                  <div className="text-[10px] mt-1" style={{ color: "rgba(255,255,255,0.45)" }}>Не входит в стоимость квартиры</div>
+                </div>
+                <div className="p-4" style={{ background: "rgba(184,150,110,0.12)", border: "1px solid var(--corp-gold)", borderRadius: 2 }}>
+                  <div className="text-[10px] tracking-widest uppercase mb-1" style={{ color: "var(--corp-gold)" }}>Опционально</div>
+                  <div className="text-sm font-semibold leading-tight" style={{ color: "var(--corp-navy)" }}>
+                    Можно купить только квартиру — на машино-места уже есть покупатель
+                  </div>
+                </div>
+              </div>
+
+              <div className="fade-up fade-up-delay-4 flex flex-col gap-2 max-w-md">
+                {[
+                  { icon: "ShieldCheck", t: "Охраняемый подземный паркинг 24/7" },
+                  { icon: "Sparkles", t: "Автомойка на территории комплекса" },
+                  { icon: "ArrowDown", t: "Прямой доступ с любого этажа" },
+                ].map(({ icon, t }) => (
+                  <div key={t} className="flex items-center gap-3">
+                    <div className="flex items-center justify-center shrink-0" style={{ width: 28, height: 28, background: "var(--corp-navy)", borderRadius: 2 }}>
+                      <Icon name={icon} size={13} style={{ color: "var(--corp-gold)" }} />
+                    </div>
+                    <span className="text-xs font-medium" style={{ color: "var(--corp-navy)" }}>{t}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div
+              className="hidden md:block relative shrink-0"
+              style={{ width: 420, backgroundImage: `url(${IMG.facade})`, backgroundSize: "cover", backgroundPosition: "center" }}
+            >
+              <div className="absolute inset-0" style={{ background: "linear-gradient(to right, rgba(255,255,255,1) 0%, transparent 30%)" }} />
+            </div>
+          </div>
+        )}
+
+        {/* SLIDE 6 — CONTACTS */}
+        {slide === 5 && (
+          <div key="s6" className="absolute inset-0 flex" style={{ background: "var(--corp-navy)" }}>
             <div
               className="absolute inset-0"
               style={{
@@ -332,32 +500,35 @@ export default function Index() {
               <div className="fade-up fade-up-delay-1">
                 <span className="accent-line mb-4 block" />
                 <div className="text-xs font-medium tracking-widest uppercase mb-3" style={{ color: "rgba(255,255,255,0.4)" }}>
-                  Слайд 04 · Контакты и реквизиты
+                  Слайд 06 · Связаться
                 </div>
               </div>
               <h2
-                className="fade-up fade-up-delay-2 font-light mb-6 text-white"
-                style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "clamp(28px, 3.8vw, 48px)", lineHeight: 1.1 }}
+                className="fade-up fade-up-delay-2 font-light mb-3 text-white"
+                style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "clamp(28px, 3.8vw, 48px)", lineHeight: 1.05 }}
               >
-                Связаться <br />
-                <span style={{ fontStyle: "italic", color: "var(--corp-gold)" }}>с нами</span>
+                Готовы показать <br />
+                <span style={{ fontStyle: "italic", color: "var(--corp-gold)" }}>квартиру лично</span>
               </h2>
+              <p className="fade-up fade-up-delay-3 text-sm max-w-md mb-7 leading-relaxed" style={{ color: "rgba(255,255,255,0.6)" }}>
+                Звоните или пишите — отвечу максимально быстро. Расскажу подробности, согласую удобное время просмотра и пришлю полный пакет документов.
+              </p>
 
-              <div className="fade-up fade-up-delay-3 flex flex-col gap-4 mb-7">
+              <div className="fade-up fade-up-delay-3 flex flex-col gap-3 mb-7">
                 {[
-                  { icon: "MapPin", label: "Адрес", val: "г. Москва, Пресненская набережная, 12, офис 2801" },
-                  { icon: "Phone", label: "Телефон", val: "+7 (495) 000-00-00" },
-                  { icon: "Mail", label: "Email", val: "info@alpha-dev.ru" },
+                  { icon: "Phone", label: "Телефон", val: "+7 (___) ___-__-__" },
+                  { icon: "MessageCircle", label: "Telegram / WhatsApp", val: "@username" },
+                  { icon: "Mail", label: "Email", val: "info@example.ru" },
                 ].map(({ icon, label, val }) => (
                   <div key={label} className="flex items-start gap-3">
-                    <div className="flex items-center justify-center shrink-0" style={{ width: 34, height: 34, background: "rgba(255,255,255,0.07)", borderRadius: 2, marginTop: 2 }}>
-                      <Icon name={icon} size={14} style={{ color: "var(--corp-gold)" }} />
+                    <div className="flex items-center justify-center shrink-0" style={{ width: 36, height: 36, background: "rgba(255,255,255,0.07)", borderRadius: 2, marginTop: 2 }}>
+                      <Icon name={icon} size={15} style={{ color: "var(--corp-gold)" }} />
                     </div>
                     <div>
                       <div className="text-[10px] font-medium tracking-widest uppercase mb-0.5" style={{ color: "rgba(255,255,255,0.32)" }}>
                         {label}
                       </div>
-                      <div className="text-sm font-medium" style={{ color: "rgba(255,255,255,0.85)" }}>{val}</div>
+                      <div className="text-base font-semibold" style={{ color: "rgba(255,255,255,0.92)" }}>{val}</div>
                     </div>
                   </div>
                 ))}
@@ -367,33 +538,43 @@ export default function Index() {
                 className="fade-up fade-up-delay-4 self-start py-3 px-6 font-semibold text-sm tracking-wide flex items-center gap-3 transition-all duration-200 hover:opacity-90"
                 style={{ background: "var(--corp-gold)", color: "#fff", borderRadius: 2, border: "none", cursor: "pointer" }}
               >
-                <Icon name="FileText" size={14} />
-                Запросить коммерческое предложение
+                <Icon name="Calendar" size={14} />
+                Записаться на просмотр
               </button>
             </div>
 
-            <div className="hidden md:flex flex-col justify-center shrink-0 p-10" style={{ width: 360, background: "rgba(0,0,0,0.2)", borderLeft: "1px solid rgba(255,255,255,0.05)" }}>
-              <div className="text-xs font-semibold tracking-widest uppercase mb-5" style={{ color: "var(--corp-gold)" }}>
-                Реквизиты компании
+            <div className="hidden md:flex flex-col justify-between shrink-0 p-10" style={{ width: 380, background: "rgba(0,0,0,0.25)", borderLeft: "1px solid rgba(255,255,255,0.05)" }}>
+              <div>
+                <div className="text-xs font-semibold tracking-widest uppercase mb-5" style={{ color: "var(--corp-gold)" }}>
+                  Резюме объекта
+                </div>
+                <div className="flex flex-col gap-3">
+                  {[
+                    { label: "Объект", val: "4-комн. квартира" },
+                    { label: "Площадь", val: "179,08 м²" },
+                    { label: "Этаж", val: "10 / 14, корпус 2" },
+                    { label: "Состояние", val: "Новая · стиль Неодеко" },
+                    { label: "Статус", val: "Свободная продажа" },
+                    { label: "Готовность", val: "Ключи на руках" },
+                  ].map(({ label, val }) => (
+                    <div key={label} className="flex justify-between items-start gap-3 pb-2.5" style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+                      <span className="text-[11px]" style={{ color: "rgba(255,255,255,0.4)" }}>{label}</span>
+                      <span className="text-[11px] font-semibold text-right" style={{ color: "rgba(255,255,255,0.85)" }}>{val}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
-              <div className="flex flex-col gap-3">
-                {[
-                  { label: "Наименование", val: 'ООО "Альфа Девелопмент"' },
-                  { label: "ИНН / КПП", val: "7700000000 / 770001001" },
-                  { label: "ОГРН", val: "1027700000000" },
-                  { label: "Расчётный счёт", val: "40702810000000000000" },
-                  { label: "Банк", val: "АО «Сбербанк России»" },
-                  { label: "БИК", val: "044525225" },
-                ].map(({ label, val }) => (
-                  <div
-                    key={label}
-                    className="flex justify-between items-start gap-3 pb-2.5"
-                    style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}
-                  >
-                    <span className="text-[11px]" style={{ color: "rgba(255,255,255,0.38)" }}>{label}</span>
-                    <span className="text-[11px] font-semibold text-right" style={{ color: "rgba(255,255,255,0.78)" }}>{val}</span>
+
+              <div className="p-4" style={{ background: "rgba(184,150,110,0.12)", border: "1px solid rgba(184,150,110,0.3)", borderRadius: 2 }}>
+                <div className="flex items-start gap-2">
+                  <Icon name="AlertCircle" size={14} style={{ color: "var(--corp-gold)", marginTop: 2 }} />
+                  <div>
+                    <div className="text-[11px] font-bold tracking-wide uppercase mb-1" style={{ color: "var(--corp-gold)" }}>Редкое предложение</div>
+                    <div className="text-[11px] leading-relaxed" style={{ color: "rgba(255,255,255,0.75)" }}>
+                      Видовых лотов такого формата на рынке единицы. Ответим оперативно.
+                    </div>
                   </div>
-                ))}
+                </div>
               </div>
             </div>
           </div>
@@ -401,7 +582,7 @@ export default function Index() {
       </div>
 
       {/* CONTROLS */}
-      <div className="w-full max-w-[1200px] flex items-center justify-between mt-5">
+      <div className="w-full max-w-[1240px] flex items-center justify-between mt-4">
         <button
           onClick={prev}
           disabled={slide === 0}
@@ -418,23 +599,23 @@ export default function Index() {
           Назад
         </button>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5">
           {SLIDE_NAMES.map((name, idx) => (
             <button
               key={name}
               onClick={() => setSlide(idx)}
-              className="flex flex-col items-center gap-1.5 px-2 py-1 transition-all duration-200"
+              className="flex flex-col items-center gap-1.5 px-2 py-1"
               style={{ background: "none", border: "none", cursor: "pointer" }}
             >
               <span
-                className="text-[10px] font-medium tracking-widest uppercase transition-colors"
-                style={{ color: idx === slide ? "var(--corp-gold)" : "rgba(255,255,255,0.35)" }}
+                className="text-[9px] font-medium tracking-widest uppercase transition-colors"
+                style={{ color: idx === slide ? "var(--corp-gold)" : "rgba(255,255,255,0.32)" }}
               >
                 {name}
               </span>
               <div
                 style={{
-                  width: idx === slide ? 36 : 18,
+                  width: idx === slide ? 32 : 16,
                   height: 3,
                   background: idx === slide ? "var(--corp-gold)" : "rgba(255,255,255,0.18)",
                   borderRadius: 2,
