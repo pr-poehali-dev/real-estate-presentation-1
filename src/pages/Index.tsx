@@ -4,9 +4,13 @@ import Icon from "@/components/ui/icon";
 const IMG = {
   templeClose: "https://cdn.poehali.dev/projects/1ccda9f4-d47a-42c5-9008-9a33cfe198d2/bucket/1f0e4b67-dff5-4d78-be41-f05802f1dd19.png",
   panoramaWindows: "https://cdn.poehali.dev/projects/1ccda9f4-d47a-42c5-9008-9a33cfe198d2/bucket/3be4f93d-f0ca-41cd-b399-17e9451b9e49.png",
+  panoramaWinter: "https://cdn.poehali.dev/projects/1ccda9f4-d47a-42c5-9008-9a33cfe198d2/bucket/bf267a01-a5ac-4d36-a4a7-ab294422f50b.png",
   bathroom: "https://cdn.poehali.dev/projects/1ccda9f4-d47a-42c5-9008-9a33cfe198d2/bucket/8622ab01-8fe2-45f9-a250-48c748a58032.png",
   livingRoom: "https://cdn.poehali.dev/projects/1ccda9f4-d47a-42c5-9008-9a33cfe198d2/bucket/56c77e9d-d853-4cf6-afe6-7b42e04f0917.png",
   bedroom: "https://cdn.poehali.dev/projects/1ccda9f4-d47a-42c5-9008-9a33cfe198d2/bucket/16ba467b-43f4-406c-a725-9ec119085861.png",
+  bedroom2: "https://cdn.poehali.dev/projects/1ccda9f4-d47a-42c5-9008-9a33cfe198d2/bucket/159f2f22-e971-4f8b-a42c-245fcccb9466.png",
+  triumphArch: "https://cdn.poehali.dev/projects/1ccda9f4-d47a-42c5-9008-9a33cfe198d2/bucket/fe85bea0-00d7-483f-a874-c7f4ac88ac12.png",
+  facade: "https://cdn.poehali.dev/projects/1ccda9f4-d47a-42c5-9008-9a33cfe198d2/bucket/1912d62f-a223-4e41-9ec6-02b94b5d6cab.png",
 };
 
 const APT = {
@@ -52,11 +56,15 @@ const APT = {
     { val: "5 мин", label: "до Лужников" },
   ],
   gallery: [
-    { img: "https://cdn.poehali.dev/projects/1ccda9f4-d47a-42c5-9008-9a33cfe198d2/bucket/56c77e9d-d853-4cf6-afe6-7b42e04f0917.png", caption: "Гостиная с панорамным остеклением и видом на Храм Победоносца" },
+    { img: "https://cdn.poehali.dev/projects/1ccda9f4-d47a-42c5-9008-9a33cfe198d2/bucket/56c77e9d-d853-4cf6-afe6-7b42e04f0917.png", caption: "Гостиная · панорамное остекление и вид на Храм" },
     { img: "https://cdn.poehali.dev/projects/1ccda9f4-d47a-42c5-9008-9a33cfe198d2/bucket/3be4f93d-f0ca-41cd-b399-17e9451b9e49.png", caption: "Изогнутые панорамные окна — вид на Парк Победы" },
+    { img: "https://cdn.poehali.dev/projects/1ccda9f4-d47a-42c5-9008-9a33cfe198d2/bucket/bf267a01-a5ac-4d36-a4a7-ab294422f50b.png", caption: "Панорамный вид зимой · Храм и центр Москвы" },
     { img: "https://cdn.poehali.dev/projects/1ccda9f4-d47a-42c5-9008-9a33cfe198d2/bucket/8622ab01-8fe2-45f9-a250-48c748a58032.png", caption: "Мастер-санузел · мрамор, две раковины, душевая" },
     { img: "https://cdn.poehali.dev/projects/1ccda9f4-d47a-42c5-9008-9a33cfe198d2/bucket/16ba467b-43f4-406c-a725-9ec119085861.png", caption: "Спальня с панорамным окном в пол" },
+    { img: "https://cdn.poehali.dev/projects/1ccda9f4-d47a-42c5-9008-9a33cfe198d2/bucket/159f2f22-e971-4f8b-a42c-245fcccb9466.png", caption: "Спальня · мягкий свет и натуральные материалы" },
     { img: "https://cdn.poehali.dev/projects/1ccda9f4-d47a-42c5-9008-9a33cfe198d2/bucket/1f0e4b67-dff5-4d78-be41-f05802f1dd19.png", caption: "Вид из окна · Храм Георгия Победоносца" },
+    { img: "https://cdn.poehali.dev/projects/1ccda9f4-d47a-42c5-9008-9a33cfe198d2/bucket/fe85bea0-00d7-483f-a874-c7f4ac88ac12.png", caption: "Триумфальные ворота — рядом с домом" },
+    { img: "https://cdn.poehali.dev/projects/1ccda9f4-d47a-42c5-9008-9a33cfe198d2/bucket/1912d62f-a223-4e41-9ec6-02b94b5d6cab.png", caption: "Victory Park Residences · фасад комплекса" },
   ],
 };
 
@@ -81,7 +89,7 @@ export default function Index() {
 
   return (
     <div
-      className="w-full min-h-screen flex flex-col items-center justify-center p-4 md:p-8"
+      className="w-full min-h-screen flex flex-col items-center justify-start p-4 md:p-6"
       style={{
         fontFamily: "'Montserrat', sans-serif",
         background: "linear-gradient(135deg, #1f2937 0%, #0d2d5e 100%)",
@@ -105,18 +113,18 @@ export default function Index() {
         </div>
       </div>
 
-      {/* SLIDE 16:9 */}
+      {/* SLIDE — auto height, min 16:9 */}
       <div
         className="w-full max-w-[1240px] relative bg-white overflow-hidden"
         style={{
-          aspectRatio: "16 / 9",
+          minHeight: "min(72vh, 700px)",
           borderRadius: 4,
           boxShadow: "0 40px 80px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.04)",
         }}
       >
         {/* SLIDE 1 — TITLE */}
         {slide === 0 && (
-          <div key="s1" className="absolute inset-0 flex">
+          <div key="s1" className="flex w-full" style={{ minHeight: "min(72vh, 700px)" }}>
             <div
               className="flex-1 relative overflow-hidden"
               style={{ backgroundImage: `url(${IMG.panoramaWindows})`, backgroundSize: "cover", backgroundPosition: "center" }}
@@ -196,7 +204,7 @@ export default function Index() {
 
         {/* SLIDE 2 — ABOUT */}
         {slide === 1 && (
-          <div key="s2" className="absolute inset-0 flex flex-col p-8 md:p-12 bg-white">
+          <div key="s2" className="flex flex-col p-8 md:p-12 bg-white" style={{ minHeight: "min(72vh, 700px)" }}>
             <div className="fade-up fade-up-delay-1 flex items-end justify-between mb-4">
               <div>
                 <span className="accent-line mb-3 block" />
@@ -222,7 +230,7 @@ export default function Index() {
               {APT.subtitle}
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-5 gap-5 flex-1 min-h-0">
+            <div className="grid grid-cols-1 md:grid-cols-5 gap-5 flex-1">
               <div className="md:col-span-2 fade-up fade-up-delay-3 relative overflow-hidden" style={{ borderRadius: 2 }}>
                 <img src={IMG.livingRoom} alt="Гостиная с панорамным остеклением" className="w-full h-full object-cover" style={{ minHeight: 220 }} />
                 <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(13,45,94,0.55) 0%, transparent 50%)" }} />
@@ -285,7 +293,7 @@ export default function Index() {
 
         {/* SLIDE 3 — LOCATION + AMENITIES */}
         {slide === 2 && (
-          <div key="s3" className="absolute inset-0 flex" style={{ background: "#eef2f8" }}>
+          <div key="s3" className="flex w-full" style={{ background: "#eef2f8", minHeight: "min(72vh, 700px)" }}>
             <div className="flex-1 relative overflow-hidden">
               <img src={IMG.templeClose} alt="Храм Георгия Победоносца — вид из окна" className="absolute inset-0 w-full h-full object-cover" />
               <div className="absolute inset-0" style={{ background: "linear-gradient(105deg, rgba(13,45,94,0.85) 25%, rgba(13,45,94,0.15) 100%)" }} />
@@ -357,7 +365,7 @@ export default function Index() {
 
         {/* SLIDE 4 — GALLERY */}
         {slide === 3 && (
-          <div key="s4" className="absolute inset-0 flex flex-col p-8 md:p-12" style={{ background: "#eef2f8" }}>
+          <div key="s4" className="flex flex-col p-8 md:p-12" style={{ background: "#eef2f8", minHeight: "min(72vh, 700px)" }}>
             <div className="fade-up fade-up-delay-1 mb-4">
               <span className="accent-line mb-3 block" />
               <div className="flex items-end justify-between">
@@ -370,9 +378,9 @@ export default function Index() {
               </div>
             </div>
 
-            <div className="flex-1 grid grid-cols-1 md:grid-cols-4 gap-3 min-h-0">
-              <div className="md:col-span-3 gallery-card relative overflow-hidden" style={{ borderRadius: 2 }}>
-                <img src={APT.gallery[galleryIdx].img} alt={APT.gallery[galleryIdx].caption} className="w-full h-full object-cover" />
+            <div className="flex-1 grid grid-cols-1 md:grid-cols-4 gap-3">
+              <div className="md:col-span-3 gallery-card relative overflow-hidden" style={{ borderRadius: 2, minHeight: 360 }}>
+                <img src={APT.gallery[galleryIdx].img} alt={APT.gallery[galleryIdx].caption} className="w-full h-full object-cover" style={{ minHeight: 360 }} />
                 <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(13,45,94,0.65) 0%, transparent 50%)" }} />
                 <div className="absolute bottom-5 left-5 right-5">
                   <div
@@ -401,16 +409,15 @@ export default function Index() {
                 </button>
               </div>
 
-              <div className="flex md:flex-col gap-3 overflow-auto">
+              <div className="grid grid-cols-3 md:grid-cols-2 gap-2 content-start">
                 {APT.gallery.map((g, idx) => (
                   <div
                     key={idx}
-                    className="gallery-card cursor-pointer overflow-hidden flex-1 relative"
+                    className="gallery-card cursor-pointer overflow-hidden relative"
                     style={{
                       borderRadius: 2,
                       border: idx === galleryIdx ? "2px solid var(--corp-gold)" : "2px solid transparent",
-                      minHeight: 70,
-                      minWidth: 80,
+                      aspectRatio: "1 / 1",
                     }}
                     onClick={() => setGalleryIdx(idx)}
                   >
@@ -425,7 +432,7 @@ export default function Index() {
 
         {/* SLIDE 5 — PARKING */}
         {slide === 4 && (
-          <div key="s5" className="absolute inset-0 flex flex-col md:flex-row" style={{ background: "var(--corp-white)" }}>
+          <div key="s5" className="flex flex-col md:flex-row w-full" style={{ background: "var(--corp-white)", minHeight: "min(72vh, 700px)" }}>
             <div className="flex-1 p-8 md:p-12 flex flex-col justify-center">
               <div className="fade-up fade-up-delay-1">
                 <span className="accent-line mb-4 block" />
@@ -489,7 +496,7 @@ export default function Index() {
 
         {/* SLIDE 6 — CONTACTS */}
         {slide === 5 && (
-          <div key="s6" className="absolute inset-0 flex" style={{ background: "var(--corp-navy)" }}>
+          <div key="s6" className="flex w-full relative" style={{ background: "var(--corp-navy)", minHeight: "min(72vh, 700px)" }}>
             <div
               className="absolute inset-0"
               style={{
