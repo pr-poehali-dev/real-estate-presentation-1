@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Icon from "@/components/ui/icon";
 
 const IMAGES = {
@@ -8,572 +8,463 @@ const IMAGES = {
   aerial: "https://cdn.poehali.dev/projects/1ccda9f4-d47a-42c5-9008-9a33cfe198d2/files/ab0def3f-684a-450a-ba59-a931bd74dcc7.jpg",
 };
 
-const OBJECTS = [
-  {
-    id: 1,
-    name: "Бизнес-центр «Горизонт»",
-    category: "Коммерческая недвижимость",
-    area: "4 800 м²",
-    floor: "12 этажей",
-    price: "680 000 000 ₽",
-    status: "Продажа",
-    statusColor: "#1a4d8f",
-    image: IMAGES.building,
-    description:
-      "Современный бизнес-центр класса A+ в деловом квартале города. Панорамное остекление фасада, подземный паркинг на 120 машиномест, развитая инфраструктура. Центральная система управления зданием BMS, индивидуальные климат-системы в каждом офисе.",
-    features: ["Класс A+", "Паркинг 120 м/м", "BMS-система", "Охрана 24/7"],
-  },
-  {
-    id: 2,
-    name: "Апартаменты «Авеню 14»",
-    category: "Жилая недвижимость",
-    area: "210 м²",
-    floor: "7 этаж из 22",
-    price: "42 500 000 ₽",
-    status: "Продажа",
-    statusColor: "#1a4d8f",
-    image: IMAGES.interior,
-    description:
-      "Представительские апартаменты с авторским интерьером и панорамными видами на реку. Полная меблировка премиум-класса, умный дом, система очистки воздуха и воды. Консьерж-сервис, спа и фитнес-зона в составе комплекса.",
-    features: ["Умный дом", "Вид на реку", "Меблированы", "Консьерж 24/7"],
-  },
-  {
-    id: 3,
-    name: "Торговый павильон «Центральный»",
-    category: "Торговая недвижимость",
-    area: "1 200 м²",
-    floor: "1 этаж",
-    price: "148 000 000 ₽",
-    status: "Аренда",
-    statusColor: "#b8966e",
-    image: IMAGES.retail,
-    description:
-      "Флагманское торговое помещение в центре пешеходной зоны с потоком 15 000+ человек/день. Потолки 6 м, панорамные витрины, зона разгрузки. Подходит для flagship-формата, автосалона, шоурума, ресторанного пространства.",
-    features: ["Поток 15 000/день", "Потолки 6 м", "Витрины 40 м", "Разгрузка"],
-  },
-  {
-    id: 4,
-    name: "Индустриальный парк «Восток»",
-    category: "Производство и склад",
-    area: "18 500 м²",
-    floor: "2 здания",
-    price: "Договорная",
-    status: "Аренда",
-    statusColor: "#b8966e",
-    image: IMAGES.aerial,
-    description:
-      "Производственно-складской комплекс с железнодорожной веткой и собственной подстанцией 1 МВт. Ворота для фур, кран-балки до 20 т, отапливаемые и холодные зоны хранения. Охраняемая территория 4,2 га, видеонаблюдение.",
-    features: ["Ж/д ветка", "Кран 20 т", "1 МВт мощность", "4.2 га"],
-  },
-];
+const OBJECT_DATA = {
+  name: "Бизнес-центр «Горизонт»",
+  category: "Коммерческая недвижимость · Класс A+",
+  image: IMAGES.building,
+  area: "4 800 м²",
+  floor: "12 этажей",
+  parking: "120 м/м",
+  price: "680 000 000 ₽",
+  status: "Продажа",
+  description:
+    "Современный бизнес-центр класса A+ в деловом квартале города. Панорамное остекление фасада, подземный паркинг на 120 машиномест, развитая инфраструктура. Центральная система управления зданием BMS, индивидуальные климат-системы в каждом офисе.",
+  features: [
+    { icon: "ShieldCheck", title: "Класс A+", text: "Высочайший стандарт инженерных систем" },
+    { icon: "Car", title: "Паркинг 120 м/м", text: "Подземный охраняемый паркинг" },
+    { icon: "Cpu", title: "BMS-система", text: "Единое управление зданием" },
+    { icon: "Lock", title: "Охрана 24/7", text: "Контроль доступа и видеонаблюдение" },
+  ],
+  gallery: [
+    { img: IMAGES.building, caption: "Фасад здания" },
+    { img: IMAGES.interior, caption: "Холл и зоны ожидания" },
+    { img: IMAGES.retail, caption: "Лобби первого этажа" },
+    { img: IMAGES.aerial, caption: "Аэросъёмка территории" },
+  ],
+};
 
-const GALLERY = [
-  { img: IMAGES.building, caption: "Бизнес-центр «Горизонт» — фасад" },
-  { img: IMAGES.interior, caption: "Апартаменты «Авеню 14» — гостиная" },
-  { img: IMAGES.retail, caption: "Торговый павильон — торговый зал" },
-  { img: IMAGES.aerial, caption: "Индустриальный парк — аэросъёмка" },
-];
-
-const SECTIONS = ["Обзор", "Объекты", "Галерея", "Контакты"];
+const SLIDE_NAMES = ["Титул", "Описание", "Галерея", "Контакты"];
+const TOTAL = SLIDE_NAMES.length;
 
 export default function Index() {
-  const [activeSection, setActiveSection] = useState("Обзор");
-  const [selectedObject, setSelectedObject] = useState<number | null>(null);
+  const [slide, setSlide] = useState(0);
   const [galleryIdx, setGalleryIdx] = useState(0);
-  const sectionRefs = useRef<Record<string, HTMLElement | null>>({});
+
+  const next = useCallback(() => setSlide((s) => Math.min(s + 1, TOTAL - 1)), []);
+  const prev = useCallback(() => setSlide((s) => Math.max(s - 1, 0)), []);
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            const id = entry.target.getAttribute("data-section");
-            if (id) setActiveSection(id);
-          }
-        });
-      },
-      { threshold: 0.4 }
-    );
-    Object.values(sectionRefs.current).forEach((el) => el && observer.observe(el));
-    return () => observer.disconnect();
-  }, []);
-
-  const scrollTo = (name: string) => {
-    sectionRefs.current[name]?.scrollIntoView({ behavior: "smooth" });
-  };
-
-  const obj = selectedObject !== null ? OBJECTS.find((o) => o.id === selectedObject) : null;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "ArrowRight") next();
+      if (e.key === "ArrowLeft") prev();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [next, prev]);
 
   return (
-    <div className="min-h-screen" style={{ fontFamily: "'Montserrat', sans-serif", background: "var(--corp-white)" }}>
-
-      {/* NAVIGATION */}
-      <nav
-        className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-8 md:px-16"
-        style={{ height: 64, background: "var(--corp-navy)", borderBottom: "1px solid rgba(255,255,255,0.07)" }}
-      >
+    <div
+      className="w-full min-h-screen flex flex-col items-center justify-center p-4 md:p-10"
+      style={{
+        fontFamily: "'Montserrat', sans-serif",
+        background: "linear-gradient(135deg, #1f2937 0%, #0d2d5e 100%)",
+      }}
+    >
+      {/* HEADER BAR */}
+      <div className="w-full max-w-[1200px] flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
-          <div
-            className="flex items-center justify-center shrink-0"
-            style={{ width: 36, height: 36, background: "var(--corp-gold)", borderRadius: 2 }}
-          >
-            <Icon name="Building2" size={18} style={{ color: "#fff" }} />
+          <div className="flex items-center justify-center" style={{ width: 32, height: 32, background: "var(--corp-gold)", borderRadius: 2 }}>
+            <Icon name="Building2" size={16} style={{ color: "#fff" }} />
           </div>
           <div>
-            <div className="text-white font-semibold text-sm tracking-wider">ГК «Альфа Девелопмент»</div>
+            <div className="text-white font-semibold text-xs tracking-wider">ГК «Альфа Девелопмент»</div>
             <div className="font-medium" style={{ color: "var(--corp-gold)", fontSize: 9, letterSpacing: "0.3em" }}>
               КОРПОРАТИВНАЯ ПРЕЗЕНТАЦИЯ
             </div>
           </div>
         </div>
-        <div className="hidden md:flex items-center gap-8">
-          {SECTIONS.map((s) => (
-            <button
-              key={s}
-              onClick={() => scrollTo(s)}
-              className={`nav-link ${activeSection === s ? "active text-white" : "text-white/70 hover:text-white"}`}
-              style={{ background: "none", border: "none", cursor: "pointer", fontFamily: "'Montserrat', sans-serif" }}
-            >
-              {s}
-            </button>
-          ))}
+        <div className="text-xs font-medium tracking-widest uppercase" style={{ color: "rgba(255,255,255,0.4)" }}>
+          {SLIDE_NAMES[slide]} · {String(slide + 1).padStart(2, "0")} / {String(TOTAL).padStart(2, "0")}
         </div>
-        <button
-          onClick={() => scrollTo("Контакты")}
-          className="hidden md:flex items-center gap-2 px-5 py-2 text-sm font-semibold tracking-wide transition-all duration-200 hover:opacity-90"
-          style={{ background: "var(--corp-gold)", color: "#fff", borderRadius: 2, border: "none", cursor: "pointer" }}
-        >
-          <Icon name="Phone" size={13} />
-          Связаться
-        </button>
-      </nav>
+      </div>
 
-      {/* HERO */}
-      <section
-        ref={(el) => { sectionRefs.current["Обзор"] = el; }}
-        data-section="Обзор"
-        className="relative flex flex-col items-start justify-end overflow-hidden"
-        style={{ minHeight: "100vh", paddingTop: 64 }}
+      {/* SLIDE FRAME — 16:9 */}
+      <div
+        className="w-full max-w-[1200px] relative bg-white overflow-hidden"
+        style={{
+          aspectRatio: "16 / 9",
+          borderRadius: 4,
+          boxShadow: "0 40px 80px rgba(0,0,0,0.45), 0 0 0 1px rgba(255,255,255,0.04)",
+        }}
       >
-        <div
-          className="absolute inset-0"
-          style={{ backgroundImage: `url(${IMAGES.building})`, backgroundSize: "cover", backgroundPosition: "center" }}
-        />
-        <div
-          className="absolute inset-0"
-          style={{ background: "linear-gradient(110deg, rgba(13,45,94,0.93) 42%, rgba(13,45,94,0.55) 100%)" }}
-        />
-        <div
-          className="absolute inset-0"
-          style={{
-            backgroundImage:
-              "linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px)",
-            backgroundSize: "80px 80px",
-          }}
-        />
-
-        <div className="relative z-10 w-full max-w-5xl mx-auto px-8 md:px-16 pb-20">
-          <div className="fade-up fade-up-delay-1">
-            <span
-              className="inline-block text-xs font-medium mb-6"
-              style={{ color: "var(--corp-gold)", letterSpacing: "0.32em", textTransform: "uppercase" }}
+        {/* SLIDE 1 — TITLE */}
+        {slide === 0 && (
+          <div key="s1" className="absolute inset-0 flex">
+            <div
+              className="flex-1 relative overflow-hidden"
+              style={{
+                backgroundImage: `url(${OBJECT_DATA.image})`,
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+              }}
             >
-              Портфель объектов 2026
-            </span>
-          </div>
-          <h1
-            className="fade-up fade-up-delay-2 font-light leading-tight mb-6 text-white"
-            style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "clamp(42px, 6vw, 82px)", lineHeight: 1.1 }}
-          >
-            Инвестиции <br />
-            <span style={{ fontStyle: "italic", color: "var(--corp-gold)" }}>в надёжную</span>
-            <br />
-            недвижимость
-          </h1>
-          <p
-            className="fade-up fade-up-delay-3 max-w-lg text-sm leading-relaxed mb-10"
-            style={{ color: "rgba(255,255,255,0.65)", fontSize: 15 }}
-          >
-            Коммерческая и жилая недвижимость премиального сегмента. Объекты с подтверждёнными
-            характеристиками, прозрачными условиями сделки и юридическим сопровождением.
-          </p>
-          <div className="fade-up fade-up-delay-4 flex flex-wrap gap-10">
-            {[
-              { val: "22+", label: "Объекта в портфеле" },
-              { val: "₽ 4,2 млрд", label: "Общая стоимость" },
-              { val: "98%", label: "Заполняемость" },
-            ].map(({ val, label }) => (
-              <div key={label}>
-                <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 34, color: "#fff", lineHeight: 1, fontWeight: 600 }}>
-                  {val}
-                </div>
-                <div className="text-xs mt-1 font-medium tracking-wide uppercase" style={{ color: "rgba(255,255,255,0.42)" }}>
-                  {label}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 z-10">
-          <span className="text-xs tracking-widest uppercase" style={{ color: "rgba(255,255,255,0.3)", fontSize: 10 }}>
-            Прокрутить
-          </span>
-          <div className="animate-bounce" style={{ width: 1, height: 36, background: "linear-gradient(to bottom, rgba(255,255,255,0.28), transparent)" }} />
-        </div>
-      </section>
-
-      {/* ОБЪЕКТЫ */}
-      <section
-        ref={(el) => { sectionRefs.current["Объекты"] = el; }}
-        data-section="Объекты"
-        className="py-24 px-8 md:px-16"
-        style={{ background: "var(--corp-white)" }}
-      >
-        <div className="max-w-6xl mx-auto">
-          <div className="mb-14">
-            <span className="accent-line mb-4 block" />
-            <h2
-              className="font-light mb-3"
-              style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "clamp(32px, 4vw, 52px)", color: "var(--corp-navy)" }}
-            >
-              Описание объектов
-            </h2>
-            <p className="text-sm" style={{ color: "var(--corp-gray-mid)", maxWidth: 480 }}>
-              Подробные характеристики каждого актива из актуального портфеля
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {OBJECTS.map((item) => (
+              <div className="absolute inset-0" style={{ background: "linear-gradient(115deg, rgba(13,45,94,0.92) 35%, rgba(13,45,94,0.35) 100%)" }} />
               <div
-                key={item.id}
-                className="object-card bg-white cursor-pointer"
-                style={{ border: "1px solid var(--corp-gray-light)", boxShadow: "0 2px 16px rgba(13,45,94,0.05)", borderRadius: "var(--radius)" }}
-                onClick={() => setSelectedObject(item.id)}
-              >
-                <div className="relative overflow-hidden" style={{ height: 220, borderRadius: "var(--radius) var(--radius) 0 0" }}>
-                  <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
-                  <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(13,45,94,0.55) 0%, transparent 60%)" }} />
-                  <div
-                    className="absolute top-4 left-4 text-xs font-semibold tracking-widest uppercase px-3 py-1"
-                    style={{ background: item.statusColor, color: "#fff", borderRadius: 2 }}
-                  >
-                    {item.status}
-                  </div>
-                  <div className="absolute bottom-4 left-4 right-4">
-                    <div className="text-xs font-medium tracking-wide uppercase mb-1" style={{ color: "var(--corp-gold)" }}>
-                      {item.category}
-                    </div>
-                    <div className="text-white font-semibold" style={{ fontSize: 17 }}>{item.name}</div>
-                  </div>
-                </div>
-
-                <div className="p-6">
-                  <div className="grid grid-cols-3 gap-4 mb-5">
-                    {[
-                      { icon: "Maximize2", val: item.area, label: "Площадь" },
-                      { icon: "Layers", val: item.floor, label: "Этажность" },
-                      { icon: "Tag", val: item.price, label: "Цена" },
-                    ].map(({ icon, val, label }) => (
-                      <div key={label}>
-                        <div className="flex items-center gap-1.5 mb-1">
-                          <Icon name={icon} size={12} style={{ color: "var(--corp-blue-mid)" }} />
-                          <span className="text-xs font-medium tracking-wide uppercase" style={{ color: "var(--corp-gray-mid)" }}>
-                            {label}
-                          </span>
-                        </div>
-                        <div className="text-sm font-semibold" style={{ color: "var(--corp-navy)" }}>{val}</div>
-                      </div>
-                    ))}
-                  </div>
-
-                  <p className="text-sm leading-relaxed mb-5" style={{ color: "var(--corp-gray)", fontSize: 13 }}>
-                    {item.description}
-                  </p>
-
-                  <div className="flex flex-wrap gap-2">
-                    {item.features.map((f) => (
-                      <span
-                        key={f}
-                        className="text-xs px-3 py-1 font-medium"
-                        style={{ background: "rgba(26,77,143,0.07)", color: "var(--corp-blue)", borderRadius: 2, border: "1px solid rgba(26,77,143,0.12)" }}
-                      >
-                        {f}
-                      </span>
-                    ))}
-                  </div>
-
-                  <button
-                    className="mt-5 w-full flex items-center justify-center gap-2 py-2.5 text-sm font-semibold tracking-wide transition-all duration-200 hover:opacity-85"
-                    style={{ background: "var(--corp-navy)", color: "#fff", borderRadius: 2, border: "none", cursor: "pointer" }}
-                  >
-                    Подробнее об объекте
-                    <Icon name="ArrowRight" size={14} />
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ГАЛЕРЕЯ */}
-      <section
-        ref={(el) => { sectionRefs.current["Галерея"] = el; }}
-        data-section="Галерея"
-        className="py-24 px-8 md:px-16"
-        style={{ background: "#eef2f8" }}
-      >
-        <div className="max-w-6xl mx-auto">
-          <div className="mb-14">
-            <span className="accent-line mb-4 block" />
-            <h2
-              className="font-light mb-3"
-              style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "clamp(32px, 4vw, 52px)", color: "var(--corp-navy)" }}
-            >
-              Галерея фотографий
-            </h2>
-            <p className="text-sm" style={{ color: "var(--corp-gray-mid)", maxWidth: 480 }}>
-              Профессиональная фотосъёмка всех объектов
-            </p>
-          </div>
-
-          <div className="gallery-card rounded mb-4" style={{ height: "clamp(280px, 42vw, 500px)" }}>
-            <img
-              src={GALLERY[galleryIdx].img}
-              alt={GALLERY[galleryIdx].caption}
-              className="w-full h-full object-cover"
-            />
-            <div className="overlay" />
-            <div className="absolute bottom-0 left-0 right-0 p-6 z-10 opacity-100">
-              <div
-                className="inline-block text-xs font-semibold tracking-wider uppercase px-3 py-1 mb-2"
-                style={{ background: "var(--corp-gold)", color: "#fff", borderRadius: 2 }}
-              >
-                {galleryIdx + 1} / {GALLERY.length}
-              </div>
-              <div className="text-white font-semibold text-lg" style={{ textShadow: "0 2px 8px rgba(0,0,0,0.5)" }}>
-                {GALLERY[galleryIdx].caption}
-              </div>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-4 gap-3 mb-6">
-            {GALLERY.map((g, idx) => (
-              <div
-                key={idx}
-                className="gallery-card cursor-pointer overflow-hidden"
+                className="absolute inset-0"
                 style={{
-                  height: 88,
-                  borderRadius: "var(--radius)",
-                  border: idx === galleryIdx ? "2px solid var(--corp-blue)" : "2px solid transparent",
+                  backgroundImage:
+                    "linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px)",
+                  backgroundSize: "60px 60px",
                 }}
-                onClick={() => setGalleryIdx(idx)}
-              >
-                <img src={g.img} alt={g.caption} className="w-full h-full object-cover" />
-                <div className="overlay" />
-              </div>
-            ))}
-          </div>
-
-          <div className="flex items-center justify-between">
-            <div className="flex gap-2">
-              {GALLERY.map((_, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => setGalleryIdx(idx)}
-                  className={`slide-dot ${idx === galleryIdx ? "active" : ""}`}
-                  style={{ border: "none", cursor: "pointer", padding: 0 }}
-                />
-              ))}
-            </div>
-            <div className="flex gap-3">
-              {[
-                { icon: "ChevronLeft", fn: () => setGalleryIdx((p) => (p - 1 + GALLERY.length) % GALLERY.length) },
-                { icon: "ChevronRight", fn: () => setGalleryIdx((p) => (p + 1) % GALLERY.length) },
-              ].map(({ icon, fn }) => (
-                <button
-                  key={icon}
-                  onClick={fn}
-                  className="flex items-center justify-center transition-all duration-200 hover:opacity-80"
-                  style={{ width: 42, height: 42, background: "var(--corp-navy)", color: "#fff", borderRadius: 2, border: "none", cursor: "pointer" }}
+              />
+              <div className="relative z-10 h-full flex flex-col justify-end p-8 md:p-14">
+                <div className="fade-up fade-up-delay-1">
+                  <span
+                    className="inline-block text-xs font-medium mb-5"
+                    style={{ color: "var(--corp-gold)", letterSpacing: "0.32em", textTransform: "uppercase" }}
+                  >
+                    Презентация объекта · 2026
+                  </span>
+                </div>
+                <h1
+                  className="fade-up fade-up-delay-2 font-light text-white mb-4"
+                  style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "clamp(34px, 5.2vw, 64px)", lineHeight: 1.05 }}
                 >
-                  <Icon name={icon} size={18} />
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
+                  Бизнес-центр <br />
+                  <span style={{ fontStyle: "italic", color: "var(--corp-gold)" }}>«Горизонт»</span>
+                </h1>
+                <p className="fade-up fade-up-delay-3 max-w-md text-sm leading-relaxed" style={{ color: "rgba(255,255,255,0.65)" }}>
+                  Коммерческая недвижимость премиального сегмента. Класс A+ в деловом квартале с полной инфраструктурой.
+                </p>
 
-      {/* КОНТАКТЫ */}
-      <section
-        ref={(el) => { sectionRefs.current["Контакты"] = el; }}
-        data-section="Контакты"
-        className="py-24 px-8 md:px-16"
-        style={{ background: "var(--corp-navy)" }}
-      >
-        <div className="max-w-6xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-start">
-            <div>
-              <span className="accent-line mb-6 block" />
-              <h2
-                className="font-light mb-5 text-white"
-                style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "clamp(32px, 4vw, 52px)", lineHeight: 1.15 }}
-              >
-                Контакты <br />
-                <span style={{ fontStyle: "italic", color: "var(--corp-gold)" }}>и реквизиты</span>
-              </h2>
-              <p className="text-sm leading-relaxed mb-10" style={{ color: "rgba(255,255,255,0.5)", maxWidth: 420 }}>
-                Свяжитесь с нами для получения подробных условий по любому из представленных объектов.
-                Работаем с корпоративными клиентами, инвестиционными фондами и частными инвесторами.
-              </p>
-
-              <div className="flex flex-col gap-5">
-                {[
-                  { icon: "MapPin", label: "Адрес", val: "г. Москва, Пресненская набережная, 12, офис 2801" },
-                  { icon: "Phone", label: "Телефон", val: "+7 (495) 000-00-00" },
-                  { icon: "Mail", label: "Email", val: "info@alpha-dev.ru" },
-                  { icon: "Clock", label: "Часы работы", val: "Пн–Пт: 09:00–19:00, Сб: 10:00–16:00" },
-                ].map(({ icon, label, val }) => (
-                  <div key={label} className="flex items-start gap-4">
-                    <div
-                      className="flex items-center justify-center shrink-0"
-                      style={{ width: 38, height: 38, background: "rgba(255,255,255,0.07)", borderRadius: 2, marginTop: 2 }}
-                    >
-                      <Icon name={icon} size={15} style={{ color: "var(--corp-gold)" }} />
-                    </div>
-                    <div>
-                      <div className="text-xs font-medium tracking-widest uppercase mb-0.5" style={{ color: "rgba(255,255,255,0.32)" }}>
+                <div className="fade-up fade-up-delay-4 flex gap-8 mt-8">
+                  {[
+                    { val: "4 800", label: "м² общая площадь" },
+                    { val: "A+", label: "Класс здания" },
+                    { val: "12", label: "этажей" },
+                  ].map(({ val, label }) => (
+                    <div key={label}>
+                      <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 32, color: "#fff", lineHeight: 1, fontWeight: 600 }}>{val}</div>
+                      <div className="text-[10px] mt-1 font-medium tracking-widest uppercase" style={{ color: "rgba(255,255,255,0.42)" }}>
                         {label}
                       </div>
-                      <div className="text-sm font-medium" style={{ color: "rgba(255,255,255,0.82)" }}>{val}</div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div>
-              <div
-                className="p-8 mb-5"
-                style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 2 }}
-              >
-                <div className="text-xs font-semibold tracking-widest uppercase mb-6" style={{ color: "var(--corp-gold)" }}>
-                  Реквизиты компании
-                </div>
-                <div className="flex flex-col gap-3">
-                  {[
-                    { label: "Полное наименование", val: 'ООО "Альфа Девелопмент"' },
-                    { label: "ИНН / КПП", val: "7700000000 / 770001001" },
-                    { label: "ОГРН", val: "1027700000000" },
-                    { label: "Расчётный счёт", val: "40702810000000000000" },
-                    { label: "Банк", val: "АО «Сбербанк России», г. Москва" },
-                    { label: "БИК", val: "044525225" },
-                  ].map(({ label, val }) => (
-                    <div
-                      key={label}
-                      className="flex justify-between items-start gap-4 pb-3"
-                      style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}
-                    >
-                      <span className="text-xs" style={{ color: "rgba(255,255,255,0.38)" }}>{label}</span>
-                      <span className="text-xs font-semibold text-right" style={{ color: "rgba(255,255,255,0.78)" }}>{val}</span>
                     </div>
                   ))}
                 </div>
               </div>
-
-              <button
-                className="w-full py-4 font-semibold text-sm tracking-wide flex items-center justify-center gap-3 transition-all duration-200 hover:opacity-90"
-                style={{ background: "var(--corp-gold)", color: "#fff", borderRadius: 2, border: "none", cursor: "pointer" }}
-              >
-                <Icon name="FileText" size={15} />
-                Запросить коммерческое предложение
-              </button>
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* FOOTER */}
-      <footer
-        className="py-5 px-8 md:px-16 flex flex-col md:flex-row items-center justify-between gap-3"
-        style={{ background: "#060f1f", borderTop: "1px solid rgba(255,255,255,0.04)" }}
-      >
-        <div className="text-xs" style={{ color: "rgba(255,255,255,0.22)" }}>
-          © 2026 ГК «Альфа Девелопмент». Все права защищены.
-        </div>
-        <div className="text-xs" style={{ color: "rgba(255,255,255,0.16)" }}>
-          Информация носит ознакомительный характер и не является публичной офертой
-        </div>
-      </footer>
-
-      {/* МОДАЛЬНОЕ ОКНО */}
-      {obj && (
-        <div
-          className="fixed inset-0 z-[100] flex items-center justify-center p-4"
-          style={{ background: "rgba(6,15,31,0.85)", backdropFilter: "blur(4px)" }}
-          onClick={() => setSelectedObject(null)}
-        >
-          <div
-            className="bg-white w-full max-w-2xl overflow-y-auto"
-            style={{ borderRadius: 2, maxHeight: "90vh" }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="relative" style={{ height: 260 }}>
-              <img src={obj.image} alt={obj.name} className="w-full h-full object-cover" />
-              <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(13,45,94,0.7) 0%, transparent 60%)" }} />
-              <button
-                className="absolute top-4 right-4 flex items-center justify-center"
-                style={{ width: 36, height: 36, background: "rgba(0,0,0,0.4)", borderRadius: 2, border: "none", cursor: "pointer", color: "#fff" }}
-                onClick={() => setSelectedObject(null)}
-              >
-                <Icon name="X" size={16} />
-              </button>
-              <div className="absolute bottom-5 left-6">
-                <div className="text-xs font-medium tracking-widest uppercase mb-1" style={{ color: "var(--corp-gold)" }}>
-                  {obj.category}
+            <div className="hidden md:flex flex-col justify-between p-10 shrink-0" style={{ width: 280, background: "var(--corp-navy)" }}>
+              <div>
+                <span className="accent-line mb-6 block" />
+                <div className="text-xs font-medium tracking-widest uppercase mb-3" style={{ color: "rgba(255,255,255,0.4)" }}>
+                  Подготовлено для
                 </div>
-                <div className="text-white font-semibold" style={{ fontSize: 20 }}>{obj.name}</div>
+                <div className="text-white font-semibold text-base mb-1">Корпоративных клиентов</div>
+                <div className="text-xs" style={{ color: "rgba(255,255,255,0.5)" }}>
+                  и инвесторов
+                </div>
+              </div>
+              <div>
+                <div className="text-xs tracking-widest uppercase mb-2" style={{ color: "rgba(255,255,255,0.32)" }}>
+                  Дата
+                </div>
+                <div className="text-white text-sm font-medium">Май 2026</div>
               </div>
             </div>
-            <div className="p-8">
-              <div className="grid grid-cols-3 gap-6 mb-6 pb-6" style={{ borderBottom: "1px solid var(--corp-gray-light)" }}>
-                {[
-                  { label: "Площадь", val: obj.area },
-                  { label: "Этажность", val: obj.floor },
-                  { label: "Стоимость", val: obj.price },
-                ].map(({ label, val }) => (
-                  <div key={label}>
-                    <div className="text-xs uppercase tracking-wide mb-1" style={{ color: "var(--corp-gray-mid)" }}>{label}</div>
-                    <div className="font-bold" style={{ color: "var(--corp-navy)", fontSize: 15 }}>{val}</div>
+          </div>
+        )}
+
+        {/* SLIDE 2 — DESCRIPTION */}
+        {slide === 1 && (
+          <div key="s2" className="absolute inset-0 flex flex-col p-8 md:p-12 bg-white">
+            <div className="fade-up fade-up-delay-1 flex items-center justify-between mb-6">
+              <div>
+                <span className="accent-line mb-3 block" />
+                <div className="text-xs font-medium tracking-widest uppercase" style={{ color: "var(--corp-gray-mid)" }}>
+                  Слайд 02 · Подробное описание
+                </div>
+              </div>
+              <span
+                className="text-xs font-semibold tracking-widest uppercase px-3 py-1.5"
+                style={{ background: "var(--corp-navy)", color: "#fff", borderRadius: 2 }}
+              >
+                {OBJECT_DATA.status}
+              </span>
+            </div>
+
+            <h2
+              className="fade-up fade-up-delay-2 font-light mb-1"
+              style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "clamp(28px, 3.6vw, 44px)", color: "var(--corp-navy)", lineHeight: 1.1 }}
+            >
+              {OBJECT_DATA.name}
+            </h2>
+            <div className="fade-up fade-up-delay-2 text-xs font-medium tracking-wide uppercase mb-6" style={{ color: "var(--corp-gold)" }}>
+              {OBJECT_DATA.category}
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-5 gap-6 flex-1">
+              <div className="md:col-span-2 fade-up fade-up-delay-3 relative overflow-hidden" style={{ borderRadius: 2 }}>
+                <img src={OBJECT_DATA.image} alt={OBJECT_DATA.name} className="w-full h-full object-cover" style={{ minHeight: 240 }} />
+                <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(13,45,94,0.5) 0%, transparent 50%)" }} />
+              </div>
+
+              <div className="md:col-span-3 fade-up fade-up-delay-4 flex flex-col">
+                <p className="text-sm leading-relaxed mb-5" style={{ color: "var(--corp-gray)" }}>
+                  {OBJECT_DATA.description}
+                </p>
+
+                <div className="grid grid-cols-2 gap-3 mb-5">
+                  {[
+                    { icon: "Maximize2", label: "Площадь", val: OBJECT_DATA.area },
+                    { icon: "Layers", label: "Этажность", val: OBJECT_DATA.floor },
+                    { icon: "Car", label: "Паркинг", val: OBJECT_DATA.parking },
+                    { icon: "Tag", label: "Стоимость", val: OBJECT_DATA.price },
+                  ].map(({ icon, label, val }) => (
+                    <div
+                      key={label}
+                      className="p-3"
+                      style={{ background: "rgba(26,77,143,0.05)", borderLeft: "3px solid var(--corp-blue)", borderRadius: 2 }}
+                    >
+                      <div className="flex items-center gap-1.5 mb-1">
+                        <Icon name={icon} size={11} style={{ color: "var(--corp-blue-mid)" }} />
+                        <span className="text-[10px] font-medium tracking-widest uppercase" style={{ color: "var(--corp-gray-mid)" }}>
+                          {label}
+                        </span>
+                      </div>
+                      <div className="font-semibold" style={{ color: "var(--corp-navy)", fontSize: 14 }}>
+                        {val}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="grid grid-cols-2 gap-2">
+                  {OBJECT_DATA.features.map((f) => (
+                    <div key={f.title} className="flex items-start gap-2">
+                      <div
+                        className="flex items-center justify-center shrink-0"
+                        style={{ width: 28, height: 28, background: "var(--corp-navy)", borderRadius: 2 }}
+                      >
+                        <Icon name={f.icon} size={13} style={{ color: "var(--corp-gold)" }} />
+                      </div>
+                      <div>
+                        <div className="text-xs font-semibold" style={{ color: "var(--corp-navy)" }}>{f.title}</div>
+                        <div className="text-[11px]" style={{ color: "var(--corp-gray-mid)" }}>{f.text}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* SLIDE 3 — GALLERY */}
+        {slide === 2 && (
+          <div key="s3" className="absolute inset-0 flex flex-col p-8 md:p-12" style={{ background: "#eef2f8" }}>
+            <div className="fade-up fade-up-delay-1 mb-5">
+              <span className="accent-line mb-3 block" />
+              <div className="flex items-end justify-between">
+                <h2 className="font-light" style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "clamp(28px, 3.6vw, 44px)", color: "var(--corp-navy)", lineHeight: 1.1 }}>
+                  Галерея <span style={{ fontStyle: "italic", color: "var(--corp-gold)" }}>фотографий</span>
+                </h2>
+                <div className="text-xs font-medium tracking-widest uppercase" style={{ color: "var(--corp-gray-mid)" }}>
+                  Слайд 03
+                </div>
+              </div>
+            </div>
+
+            <div className="flex-1 grid grid-cols-1 md:grid-cols-4 gap-3 min-h-0">
+              <div className="md:col-span-3 gallery-card relative overflow-hidden" style={{ borderRadius: 2 }}>
+                <img src={OBJECT_DATA.gallery[galleryIdx].img} alt={OBJECT_DATA.gallery[galleryIdx].caption} className="w-full h-full object-cover" />
+                <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(13,45,94,0.65) 0%, transparent 50%)" }} />
+                <div className="absolute bottom-5 left-5 right-5">
+                  <div
+                    className="inline-block text-[10px] font-semibold tracking-widest uppercase px-2.5 py-1 mb-2"
+                    style={{ background: "var(--corp-gold)", color: "#fff", borderRadius: 2 }}
+                  >
+                    {galleryIdx + 1} / {OBJECT_DATA.gallery.length}
+                  </div>
+                  <div className="text-white font-semibold text-base" style={{ textShadow: "0 2px 8px rgba(0,0,0,0.5)" }}>
+                    {OBJECT_DATA.gallery[galleryIdx].caption}
+                  </div>
+                </div>
+                <button
+                  onClick={() => setGalleryIdx((p) => (p - 1 + OBJECT_DATA.gallery.length) % OBJECT_DATA.gallery.length)}
+                  className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center justify-center transition-all duration-200 hover:opacity-100"
+                  style={{ width: 36, height: 36, background: "rgba(13,45,94,0.85)", color: "#fff", borderRadius: 2, border: "none", cursor: "pointer", opacity: 0.7 }}
+                >
+                  <Icon name="ChevronLeft" size={16} />
+                </button>
+                <button
+                  onClick={() => setGalleryIdx((p) => (p + 1) % OBJECT_DATA.gallery.length)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center justify-center transition-all duration-200 hover:opacity-100"
+                  style={{ width: 36, height: 36, background: "rgba(13,45,94,0.85)", color: "#fff", borderRadius: 2, border: "none", cursor: "pointer", opacity: 0.7 }}
+                >
+                  <Icon name="ChevronRight" size={16} />
+                </button>
+              </div>
+
+              <div className="flex md:flex-col gap-3 overflow-auto">
+                {OBJECT_DATA.gallery.map((g, idx) => (
+                  <div
+                    key={idx}
+                    className="gallery-card cursor-pointer overflow-hidden flex-1 relative"
+                    style={{
+                      borderRadius: 2,
+                      border: idx === galleryIdx ? "2px solid var(--corp-gold)" : "2px solid transparent",
+                      minHeight: 70,
+                      minWidth: 80,
+                    }}
+                    onClick={() => setGalleryIdx(idx)}
+                  >
+                    <img src={g.img} alt={g.caption} className="w-full h-full object-cover" />
+                    <div className="absolute inset-0" style={{ background: idx === galleryIdx ? "rgba(13,45,94,0)" : "rgba(13,45,94,0.4)", transition: "all 0.3s" }} />
                   </div>
                 ))}
               </div>
-              <p className="text-sm leading-relaxed mb-6" style={{ color: "var(--corp-gray)" }}>{obj.description}</p>
-              <div className="flex flex-wrap gap-2 mb-8">
-                {obj.features.map((f) => (
-                  <span
-                    key={f}
-                    className="text-xs px-3 py-1.5 font-medium"
-                    style={{ background: "rgba(26,77,143,0.07)", color: "var(--corp-blue)", borderRadius: 2, border: "1px solid rgba(26,77,143,0.12)" }}
-                  >
-                    {f}
-                  </span>
-                ))}
-              </div>
-              <button
-                className="w-full py-3.5 font-semibold text-sm tracking-wide flex items-center justify-center gap-2 transition-all duration-200 hover:opacity-90"
-                style={{ background: "var(--corp-navy)", color: "#fff", borderRadius: 2, border: "none", cursor: "pointer" }}
-              >
-                <Icon name="Phone" size={14} />
-                Связаться по этому объекту
-              </button>
             </div>
           </div>
+        )}
+
+        {/* SLIDE 4 — CONTACTS */}
+        {slide === 3 && (
+          <div key="s4" className="absolute inset-0 flex" style={{ background: "var(--corp-navy)" }}>
+            <div
+              className="absolute inset-0"
+              style={{
+                backgroundImage:
+                  "linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px)",
+                backgroundSize: "60px 60px",
+              }}
+            />
+            <div className="relative z-10 flex-1 p-8 md:p-12 flex flex-col justify-center">
+              <div className="fade-up fade-up-delay-1">
+                <span className="accent-line mb-4 block" />
+                <div className="text-xs font-medium tracking-widest uppercase mb-3" style={{ color: "rgba(255,255,255,0.4)" }}>
+                  Слайд 04 · Контакты и реквизиты
+                </div>
+              </div>
+              <h2
+                className="fade-up fade-up-delay-2 font-light mb-6 text-white"
+                style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "clamp(28px, 3.8vw, 48px)", lineHeight: 1.1 }}
+              >
+                Связаться <br />
+                <span style={{ fontStyle: "italic", color: "var(--corp-gold)" }}>с нами</span>
+              </h2>
+
+              <div className="fade-up fade-up-delay-3 flex flex-col gap-4 mb-7">
+                {[
+                  { icon: "MapPin", label: "Адрес", val: "г. Москва, Пресненская набережная, 12, офис 2801" },
+                  { icon: "Phone", label: "Телефон", val: "+7 (495) 000-00-00" },
+                  { icon: "Mail", label: "Email", val: "info@alpha-dev.ru" },
+                ].map(({ icon, label, val }) => (
+                  <div key={label} className="flex items-start gap-3">
+                    <div className="flex items-center justify-center shrink-0" style={{ width: 34, height: 34, background: "rgba(255,255,255,0.07)", borderRadius: 2, marginTop: 2 }}>
+                      <Icon name={icon} size={14} style={{ color: "var(--corp-gold)" }} />
+                    </div>
+                    <div>
+                      <div className="text-[10px] font-medium tracking-widest uppercase mb-0.5" style={{ color: "rgba(255,255,255,0.32)" }}>
+                        {label}
+                      </div>
+                      <div className="text-sm font-medium" style={{ color: "rgba(255,255,255,0.85)" }}>{val}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <button
+                className="fade-up fade-up-delay-4 self-start py-3 px-6 font-semibold text-sm tracking-wide flex items-center gap-3 transition-all duration-200 hover:opacity-90"
+                style={{ background: "var(--corp-gold)", color: "#fff", borderRadius: 2, border: "none", cursor: "pointer" }}
+              >
+                <Icon name="FileText" size={14} />
+                Запросить коммерческое предложение
+              </button>
+            </div>
+
+            <div className="hidden md:flex flex-col justify-center shrink-0 p-10" style={{ width: 360, background: "rgba(0,0,0,0.2)", borderLeft: "1px solid rgba(255,255,255,0.05)" }}>
+              <div className="text-xs font-semibold tracking-widest uppercase mb-5" style={{ color: "var(--corp-gold)" }}>
+                Реквизиты компании
+              </div>
+              <div className="flex flex-col gap-3">
+                {[
+                  { label: "Наименование", val: 'ООО "Альфа Девелопмент"' },
+                  { label: "ИНН / КПП", val: "7700000000 / 770001001" },
+                  { label: "ОГРН", val: "1027700000000" },
+                  { label: "Расчётный счёт", val: "40702810000000000000" },
+                  { label: "Банк", val: "АО «Сбербанк России»" },
+                  { label: "БИК", val: "044525225" },
+                ].map(({ label, val }) => (
+                  <div
+                    key={label}
+                    className="flex justify-between items-start gap-3 pb-2.5"
+                    style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}
+                  >
+                    <span className="text-[11px]" style={{ color: "rgba(255,255,255,0.38)" }}>{label}</span>
+                    <span className="text-[11px] font-semibold text-right" style={{ color: "rgba(255,255,255,0.78)" }}>{val}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* CONTROLS */}
+      <div className="w-full max-w-[1200px] flex items-center justify-between mt-5">
+        <button
+          onClick={prev}
+          disabled={slide === 0}
+          className="flex items-center gap-2 px-4 py-2.5 text-xs font-semibold tracking-wide uppercase transition-all duration-200"
+          style={{
+            background: slide === 0 ? "rgba(255,255,255,0.05)" : "rgba(255,255,255,0.1)",
+            color: slide === 0 ? "rgba(255,255,255,0.3)" : "#fff",
+            borderRadius: 2,
+            border: "1px solid rgba(255,255,255,0.1)",
+            cursor: slide === 0 ? "not-allowed" : "pointer",
+          }}
+        >
+          <Icon name="ChevronLeft" size={14} />
+          Назад
+        </button>
+
+        <div className="flex items-center gap-2">
+          {SLIDE_NAMES.map((name, idx) => (
+            <button
+              key={name}
+              onClick={() => setSlide(idx)}
+              className="flex flex-col items-center gap-1.5 px-2 py-1 transition-all duration-200"
+              style={{ background: "none", border: "none", cursor: "pointer" }}
+            >
+              <span
+                className="text-[10px] font-medium tracking-widest uppercase transition-colors"
+                style={{ color: idx === slide ? "var(--corp-gold)" : "rgba(255,255,255,0.35)" }}
+              >
+                {name}
+              </span>
+              <div
+                style={{
+                  width: idx === slide ? 36 : 18,
+                  height: 3,
+                  background: idx === slide ? "var(--corp-gold)" : "rgba(255,255,255,0.18)",
+                  borderRadius: 2,
+                  transition: "all 0.3s",
+                }}
+              />
+            </button>
+          ))}
         </div>
-      )}
+
+        <button
+          onClick={next}
+          disabled={slide === TOTAL - 1}
+          className="flex items-center gap-2 px-4 py-2.5 text-xs font-semibold tracking-wide uppercase transition-all duration-200"
+          style={{
+            background: slide === TOTAL - 1 ? "rgba(255,255,255,0.05)" : "var(--corp-gold)",
+            color: slide === TOTAL - 1 ? "rgba(255,255,255,0.3)" : "#fff",
+            borderRadius: 2,
+            border: "none",
+            cursor: slide === TOTAL - 1 ? "not-allowed" : "pointer",
+          }}
+        >
+          Далее
+          <Icon name="ChevronRight" size={14} />
+        </button>
+      </div>
+
+      <div className="text-[10px] tracking-widest uppercase mt-3" style={{ color: "rgba(255,255,255,0.25)" }}>
+        Используйте стрелки ← → для навигации
+      </div>
     </div>
   );
 }
