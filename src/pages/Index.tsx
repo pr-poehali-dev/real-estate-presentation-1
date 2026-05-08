@@ -552,13 +552,55 @@ export default function Index() {
                   Слайд 06 · Связаться
                 </div>
               </div>
-              <h2
-                className="fade-up fade-up-delay-2 font-light mb-3 text-white"
-                style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "clamp(28px, 3.8vw, 48px)", lineHeight: 1.05 }}
-              >
-                Готовы показать <br />
-                <span style={{ fontStyle: "italic", color: "var(--corp-gold)" }}>квартиру лично</span>
-              </h2>
+              <div className="fade-up fade-up-delay-2 mb-5">
+                <div
+                  className="inline-flex items-center gap-2 px-3 py-1.5 mb-4"
+                  style={{
+                    border: "1px solid rgba(184,150,110,0.4)",
+                    background: "rgba(184,150,110,0.08)",
+                    borderRadius: 2,
+                  }}
+                >
+                  <span
+                    style={{
+                      width: 6,
+                      height: 6,
+                      borderRadius: "50%",
+                      background: "var(--corp-gold)",
+                      boxShadow: "0 0 8px var(--corp-gold)",
+                    }}
+                  />
+                  <span
+                    className="text-[10px] font-bold tracking-[0.25em] uppercase"
+                    style={{ color: "var(--corp-gold)" }}
+                  >
+                    Приём по записи
+                  </span>
+                </div>
+                <h2
+                  className="font-light text-white"
+                  style={{
+                    fontFamily: "'Cormorant Garamond', serif",
+                    fontSize: "clamp(26px, 3.4vw, 44px)",
+                    lineHeight: 1.1,
+                    letterSpacing: "-0.01em",
+                    whiteSpace: "normal",
+                    overflowWrap: "break-word",
+                  }}
+                >
+                  Запишитесь
+                  <br />
+                  <span
+                    style={{
+                      fontStyle: "italic",
+                      color: "var(--corp-gold)",
+                      fontWeight: 400,
+                    }}
+                  >
+                    на закрытый просмотр
+                  </span>
+                </h2>
+              </div>
               <p className="fade-up fade-up-delay-3 text-sm max-w-md mb-7 leading-relaxed" style={{ color: "rgba(255,255,255,0.6)" }}>
                 Звоните или пишите — отвечу максимально быстро. Расскажу подробности, согласую удобное время просмотра и пришлю полный пакет документов.
               </p>
